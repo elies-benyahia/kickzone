@@ -4,8 +4,14 @@ import MatchCard from '../components/MatchCard';
 import styles from './Matches.module.css';
 
 const LEAGUES = [
-  { id: null, label: 'Toutes' }, { id: 2, label: 'UCL' }, { id: 61, label: 'Ligue 1' },
-  { id: 39, label: 'PL' }, { id: 140, label: 'Liga' }, { id: 78, label: 'Bundesliga' }, { id: 135, label: 'Serie A' },
+  { id: null,  label: 'Toutes' },
+  { id: 1,     label: '🏆 Coupe du Monde' },
+  { id: 2,     label: 'UCL' },
+  { id: 61,    label: 'Ligue 1' },
+  { id: 39,    label: 'PL' },
+  { id: 140,   label: 'Liga' },
+  { id: 78,    label: 'Bundesliga' },
+  { id: 135,   label: 'Serie A' },
 ];
 
 const fmt = (d) => d.toISOString().split('T')[0];
@@ -17,7 +23,12 @@ export default function Matches() {
   const dateStr = fmt(date);
   const { data: fixtures, isLoading } = useFixturesByDate(dateStr);
 
-  const filtered = leagueFilter ? (fixtures ?? []).filter(f => f.league.id === leagueFilter) : (fixtures ?? []);
+  const filteredRaw = leagueFilter ? (fixtures ?? []).filter(f => f.league.id === leagueFilter) : (fixtures ?? []);
+  const filtered = [...filteredRaw].sort((a, b) => {
+    if (a.league.id === 1) return -1;
+    if (b.league.id === 1) return 1;
+    return 0;
+  });
   const grouped = {};
   filtered.forEach(f => {
     const name = f.league.name;

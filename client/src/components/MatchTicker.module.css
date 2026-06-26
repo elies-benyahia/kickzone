@@ -1,5 +1,5 @@
 .ticker { background:var(--blue); overflow:hidden; height:34px; display:flex; align-items:center; }
-.rail { display:flex; align-items:center; white-space:nowrap; animation:scroll 60s linear infinite; }
+.rail { display:flex; align-items:center; white-space:nowrap; animation:scroll 180s linear infinite; }
 .rail:hover { animation-play-state:paused; }
 @keyframes scroll { from { transform:translateX(0); } to { transform:translateX(-50%); } }
 .item { display:inline-flex; align-items:center; gap:8px; padding:0 16px; border-right:1px solid rgba(255,255,255,0.2); color:#fff; font-size:0.78rem; }

@@ -18,6 +18,8 @@ const Classements = lazy(() => import('./pages/Classements'));
 const Pronos      = lazy(() => import('./pages/Pronos'));
 const Admin       = lazy(() => import('./pages/Admin'));
 const AdminLogin  = lazy(() => import('./pages/AdminLogin'));
+const Joueurs     = lazy(() => import('./pages/Joueurs'));
+const Joueur      = lazy(() => import('./pages/Joueur'));
 
 const Loader = () => <div style={{minHeight:'40vh',display:'flex',alignItems:'center',justifyContent:'center',color:'var(--text-muted)',fontWeight:600}}>Chargement...</div>;
 
@@ -39,6 +41,8 @@ function AppLayout() {
           <Route path="/pronos"        element={<Pronos />} />
           <Route path="/admin"         element={<Admin />} />
           <Route path="/admin/login"   element={<AdminLogin />} />
+          <Route path="/joueurs"       element={<Joueurs />} />
+          <Route path="/joueur/:id"    element={<Joueur />} />
           <Route path="*"              element={<Navigate to="/" replace />} />
         </Routes>
       </Suspense>

@@ -10,6 +10,7 @@ const NAV = [
   { to: '/actu',       label: 'Actu' },
   { to: '/classements',label: 'Classements' },
   { to: '/pronos',     label: 'Pronos' },
+  { to: '/joueurs',   label: 'Joueurs' },
 ];
 
 export default function Navbar() {

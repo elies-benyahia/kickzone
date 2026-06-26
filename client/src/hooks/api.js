@@ -52,3 +52,17 @@ export const useArticle = (slug) =>
 // Pronostics hook
 export const usePronostics = () =>
   useQuery({ queryKey: ['pronostics'], queryFn: () => api.get('/pronostics').then(r => r.data) });
+
+export const useTransferNews = () =>
+  useQuery({ queryKey: ['transfer-news'], queryFn: () => api.get('/football/transfers/news').then(r => r.data), staleTime: 10 * 60 * 1000 });
+
+export const usePlayerSearch = (query) =>
+  useQuery({
+    queryKey: ['player-search', query],
+    queryFn: () => api.get('/football/players/search', { params: { q: query } }).then(r => r.data),
+    enabled: query?.length >= 2,
+    staleTime: 5 * 60 * 1000,
+  });
+
+export const usePlayer = (id) =>
+  useQuery({ queryKey: ['player', id], queryFn: () => api.get(`/football/players/${id}`).then(r => r.data), enabled: !!id });

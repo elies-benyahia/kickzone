@@ -1,0 +1,36 @@
+.loading { text-align: center; padding: 4rem; color: var(--text-muted); }
+.header { display: flex; gap: 2rem; background: #fff; border-radius: var(--radius); box-shadow: var(--shadow); padding: 2rem; margin-bottom: 1.5rem; align-items: flex-start; }
+.photoWrap { flex-shrink: 0; }
+.photo { width: 120px; height: 120px; border-radius: 12px; object-fit: cover; background: var(--bg); border: 3px solid var(--border); }
+.headerInfo { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+.nationality { display: flex; align-items: center; gap: 6px; font-size: 0.78rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; }
+.flag { height: 16px; border-radius: 2px; }
+.name { font-size: clamp(1.6rem, 4vw, 2.4rem); font-weight: 900; letter-spacing: -0.03em; color: var(--text); line-height: 1.1; }
+.currentTeam { display: flex; align-items: center; gap: 8px; font-size: 1rem; font-weight: 600; color: var(--text-dim); }
+.leagueName { font-size: 0.85rem; color: var(--text-muted); font-weight: 400; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag { background: var(--bg); border: 1px solid var(--border); border-radius: 20px; padding: 3px 10px; font-size: 0.78rem; font-weight: 500; color: var(--text-dim); }
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.card { background: #fff; border-radius: var(--radius); box-shadow: var(--shadow); padding: 1.5rem; }
+.cardFull { grid-column: 1 / -1; }
+.cardTitle { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 1rem; }
+.statsGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.stat { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 10px; background: var(--bg); border-radius: 8px; text-align: center; }
+.statValue { font-size: 1.4rem; font-weight: 900; color: var(--blue); }
+.statLabel { font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+.trophyList { display: flex; flex-direction: column; gap: 6px; }
+.trophyRow { display: flex; align-items: center; gap: 12px; padding: 8px; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+.trophyName { flex: 1; font-weight: 600; }
+.trophyPlace { color: var(--text-muted); min-width: 110px; }
+.trophySeason { color: var(--text-muted); min-width: 60px; text-align: right; font-size: 0.8rem; }
+.transferTable { display: flex; flex-direction: column; gap: 4px; }
+.transferHeader { display: grid; grid-template-columns: 90px 1fr 24px 1fr 80px 80px; gap: 8px; padding: 6px 8px; font-size: 0.72rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 2px solid var(--border); }
+.transferRow { display: grid; grid-template-columns: 90px 1fr 24px 1fr 80px 80px; gap: 8px; padding: 10px 8px; border-bottom: 1px solid var(--border); font-size: 0.85rem; align-items: center; }
+.transferRow:hover { background: var(--bg); }
+.trDate { font-size: 0.78rem; color: var(--text-muted); }
+.trTeam { display: flex; align-items: center; gap: 6px; font-weight: 600; overflow: hidden; }
+.trTeam img { flex-shrink: 0; object-fit: contain; }
+.trArrow { color: var(--blue); font-weight: 700; text-align: center; }
+.trType { font-size: 0.78rem; color: var(--text-muted); }
+.trFee { font-weight: 700; color: var(--orange); font-size: 0.82rem; }
+@media(max-width: 768px) { .header { flex-direction: column; } .grid { grid-template-columns: 1fr; } .transferHeader, .transferRow { grid-template-columns: 70px 1fr 20px 1fr; } .trType, .trFee { display: none; } }

@@ -41,4 +41,8 @@ module.exports = {
     return results.flat().slice(0, 20);
   },
   getPlayers: (teamId) => apiCall('/players', { team: teamId, season: 2024 }),
+  searchPlayers: (name) => apiCall('/players', { search: name, season: 2024 }),
+  getPlayer: (id) => apiCall('/players', { id, season: 2024 }),
+  getPlayerTransfers: (id) => apiCall('/transfers', { player: id }),
+  getPlayerTrophies: (id) => apiCall('/trophies', { player: id }),
 };

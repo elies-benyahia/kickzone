@@ -9,8 +9,13 @@ import styles from './Home.module.css';
 
 function LeftSidebar({ fixtures }) {
   if (!fixtures) return <SidebarSkeleton />;
+  const sorted = [...fixtures].sort((a, b) => {
+    if (a.league.id === 1) return -1;
+    if (b.league.id === 1) return 1;
+    return 0;
+  });
   const grouped = {};
-  fixtures.forEach(f => {
+  sorted.forEach(f => {
     const name = f.league.name;
     if (!grouped[name]) grouped[name] = [];
     grouped[name].push(f);
