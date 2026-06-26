@@ -1,0 +1,10 @@
+.wrap { overflow-x:auto; }
+.table { width:100%; border-collapse:collapse; font-size:0.82rem; }
+.table th { padding:6px 8px; text-align:left; color:var(--text-muted); font-weight:600; font-size:0.72rem; border-bottom:1px solid var(--border); white-space:nowrap; }
+.table td { padding:7px 8px; border-bottom:1px solid var(--border); }
+.teamCell { display:flex; align-items:center; gap:6px; min-width:120px; }
+.rank { font-weight:700; color:var(--text-muted); width:24px; }
+.pts { font-weight:700; color:var(--blue); }
+.promo td { border-left:3px solid var(--blue); }
+.relegate td { border-left:3px solid #ef4444; }
+tr:hover td { background:var(--bg); }

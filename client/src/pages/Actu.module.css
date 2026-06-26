@@ -1,0 +1,6 @@
+.title { font-size:1.5rem; font-weight:900; margin-bottom:1rem; }
+.filters { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:1.5rem; }
+.filter { padding:7px 16px; border-radius:20px; border:1.5px solid var(--border); background:#fff; font-size:0.82rem; font-weight:600; cursor:pointer; transition:all 0.15s; }
+.filterActive { background:var(--blue); color:#fff; border-color:var(--blue); }
+.grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:1rem; }
+.empty { text-align:center; padding:3rem; color:var(--text-muted); }

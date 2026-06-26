@@ -1,0 +1,19 @@
+.card {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  transition: box-shadow 0.15s;
+  text-decoration: none;
+}
+.card:hover { box-shadow: var(--shadow-md); }
+.team { display: flex; align-items: center; gap: 6px; flex: 1; }
+.teamRight { flex-direction: row-reverse; }
+.name { font-size: 0.82rem; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.center { flex-shrink: 0; text-align: center; min-width: 70px; }
+.score { font-size: 1rem; font-weight: 700; color: var(--text); }
+.time { font-size: 0.85rem; font-weight: 700; color: var(--blue); }

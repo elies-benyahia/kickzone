@@ -1,0 +1,16 @@
+.card { background:var(--bg-card); border-radius:var(--radius); box-shadow:var(--shadow); padding:16px; display:flex; flex-direction:column; gap:10px; }
+.header { display:flex; justify-content:space-between; align-items:center; }
+.league { font-size:0.72rem; font-weight:700; color:var(--blue); text-transform:uppercase; letter-spacing:0.05em; }
+.date { font-size:0.72rem; color:var(--text-muted); }
+.match { font-size:1rem; font-weight:700; color:var(--text); }
+.match span { color:var(--text-muted); font-weight:400; margin:0 6px; }
+.prediction { display:flex; flex-direction:column; gap:2px; }
+.label { font-size:0.72rem; color:var(--text-muted); }
+.value { font-size:0.9rem; font-weight:600; color:var(--text); }
+.confidence { display:flex; align-items:center; gap:8px; }
+.bar { flex:1; height:6px; background:var(--bg); border-radius:3px; overflow:hidden; }
+.fill { height:100%; border-radius:3px; transition:width 0.3s; }
+.pct { font-size:0.78rem; font-weight:700; color:var(--text-muted); min-width:32px; }
+.result { padding:8px 12px; border-radius:6px; font-size:0.82rem; font-weight:700; text-align:center; }
+.correct { background:#dcfce7; color:var(--green-live); }
+.wrong { background:#fee2e2; color:#dc2626; }

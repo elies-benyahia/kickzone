@@ -1,0 +1,8 @@
+.ticker { background:var(--blue); color:#fff; padding:10px var(--gutter); display:flex; gap:2rem; overflow-x:auto; white-space:nowrap; margin:-1.5rem calc(-1*var(--gutter)) 1.5rem; font-size:0.82rem; }
+.tickerItem { flex-shrink:0; }
+.header { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem; margin-bottom:1.5rem; }
+.title { font-size:1.5rem; font-weight:900; }
+.search { padding:8px 14px; border:1.5px solid var(--border); border-radius:var(--radius); font-size:0.88rem; font-family:var(--font); outline:none; width:280px; }
+.search:focus { border-color:var(--blue); }
+.grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:1rem; }
+.empty { color:var(--text-muted); padding:3rem; text-align:center; }
