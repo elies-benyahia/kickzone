@@ -17,7 +17,10 @@ export default function Navbar() {
   return (
     <header className={styles.header}>
       <div className={styles.inner}>
-        <Link to="/" className={styles.logo}>KickZone ⚽</Link>
+        <Link to="/" className={styles.logo}>
+          <img src="/logo.png" alt="KickZone" className={styles.logoImg} onError={e => { e.target.style.display='none'; e.target.nextSibling.style.display='inline'; }} />
+          <span style={{display:'none'}}>KickZone ⚽</span>
+        </Link>
         <nav className={`${styles.nav} ${open ? styles.navOpen : ''}`}>
           {NAV.map(({ to, label }) => (
             <NavLink key={to} to={to} end={to === '/'} className={({ isActive }) => `${styles.link} ${isActive ? styles.active : ''}`} onClick={() => setOpen(false)}>
