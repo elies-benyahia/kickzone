@@ -1,4 +1,5 @@
 const articleService = require('../services/articleService');
+const prisma = require('../services/prismaClient');
 
 const list = async (req, res, next) => {
   try {
@@ -10,6 +11,11 @@ const list = async (req, res, next) => {
 const get = async (req, res, next) => {
   try {
     const article = await articleService.getArticleBySlug(req.params.slug);
+    // Increment views asynchronously
+    prisma.article.update({
+      where: { id: article.id },
+      data: { views: { increment: 1 } },
+    }).catch(() => {});
     res.json(article);
   } catch (e) { next(e); }
 };

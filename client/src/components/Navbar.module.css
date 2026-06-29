@@ -1,15 +1,46 @@
-.header { position:sticky; top:0; z-index:100; background:#fff; border-bottom:1px solid var(--border); }
-.inner { display:flex; align-items:center; justify-content:space-between; max-width:var(--max-w); margin:0 auto; padding:0 var(--gutter); height:60px; gap:1rem; }
-.logo { display:flex; align-items:center; font-size:1.4rem; font-weight:900; color:var(--blue); letter-spacing:-0.02em; }
+.header { position:sticky; top:0; z-index:100; background:var(--header-bg); border-bottom:1px solid var(--border); }
+.inner { display:flex; align-items:center; justify-content:space-between; max-width:var(--max-w); margin:0 auto; padding:0 var(--gutter); height:60px; gap:0.75rem; }
+.logo { display:flex; align-items:center; font-size:1.4rem; font-weight:900; color:var(--blue); letter-spacing:-0.02em; flex-shrink:0; }
 .logoImg { height:36px; width:auto; object-fit:contain; display:block; }
-.nav { display:flex; align-items:center; gap:4px; }
-.link { padding:6px 12px; border-radius:6px; font-size:0.88rem; font-weight:600; color:var(--text-dim); transition:color 0.15s, background 0.15s; }
+.nav { display:flex; align-items:center; gap:2px; }
+.link { padding:6px 10px; border-radius:6px; font-size:0.85rem; font-weight:600; color:var(--text-dim); transition:color 0.15s, background 0.15s; white-space:nowrap; }
 .link:hover { color:var(--blue); background:var(--blue-light); }
 .active { color:var(--blue); text-decoration:underline; text-underline-offset:4px; text-decoration-thickness:2px; }
+
+.actions { display:flex; align-items:center; gap:8px; flex-shrink:0; }
+
+/* Search */
+.searchWrap { position:relative; }
+.searchInput { display:flex; align-items:center; gap:6px; background:var(--bg); border:1.5px solid var(--border); border-radius:20px; padding:4px 10px; width:200px; transition:width 0.2s, border-color 0.15s; }
+.searchInput:focus-within { border-color:var(--blue); width:240px; }
+.searchIcon { font-size:0.85rem; flex-shrink:0; }
+.searchField { border:none; background:transparent; font-size:0.82rem; color:var(--text); width:100%; outline:none; }
+.searchField::placeholder { color:var(--text-muted); }
+.searchClear { color:var(--text-muted); font-size:1rem; line-height:1; padding:0; }
+.dropdown { position:absolute; top:calc(100% + 8px); left:0; right:0; background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow-md); z-index:200; overflow:hidden; min-width:260px; }
+.dropSection { padding:6px 12px 4px; font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-muted); border-bottom:1px solid var(--border); }
+.dropItem { display:flex; align-items:center; gap:8px; width:100%; padding:8px 12px; font-size:0.85rem; color:var(--text); transition:background 0.1s; cursor:pointer; text-align:left; }
+.dropItem:hover { background:var(--bg); }
+.dropMeta { margin-left:auto; font-size:0.75rem; color:var(--text-muted); }
+.dropEmpty { padding:12px; font-size:0.85rem; color:var(--text-muted); text-align:center; }
+
+/* Dark toggle */
+.darkToggle { font-size:1.1rem; width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; border:1.5px solid var(--border); background:var(--bg); transition:background 0.15s; }
+.darkToggle:hover { background:var(--blue-light); }
+
 .burger { display:none; flex-direction:column; gap:5px; width:36px; height:36px; align-items:center; justify-content:center; }
 .burger span { display:block; width:20px; height:2px; background:var(--text); border-radius:2px; }
-@media(max-width:768px) {
-  .nav { display:none; position:fixed; top:60px; left:0; right:0; background:#fff; border-bottom:1px solid var(--border); padding:1rem; flex-direction:column; align-items:stretch; }
+
+@media(max-width:900px) {
+  .nav { display:none; position:fixed; top:60px; left:0; right:0; background:var(--header-bg); border-bottom:1px solid var(--border); padding:1rem; flex-direction:column; align-items:stretch; z-index:99; }
   .navOpen { display:flex; }
   .burger { display:flex; }
+  .searchInput { width:160px; }
+  .searchInput:focus-within { width:180px; }
+}
+
+@media(max-width:600px) {
+  .actions { gap:4px; }
+  .searchInput { width:120px; }
+  .searchInput:focus-within { width:150px; }
 }

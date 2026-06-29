@@ -1,10 +1,39 @@
 .wrap { overflow-x:auto; }
 .table { width:100%; border-collapse:collapse; font-size:0.82rem; }
-.table th { padding:6px 8px; text-align:left; color:var(--text-muted); font-weight:600; font-size:0.72rem; border-bottom:1px solid var(--border); white-space:nowrap; }
-.table td { padding:7px 8px; border-bottom:1px solid var(--border); }
-.teamCell { display:flex; align-items:center; gap:6px; min-width:120px; }
-.rank { font-weight:700; color:var(--text-muted); width:24px; }
-.pts { font-weight:700; color:var(--blue); }
-.promo td { border-left:3px solid var(--blue); }
-.relegate td { border-left:3px solid #ef4444; }
-tr:hover td { background:var(--bg); }
+.table th { padding:6px 8px; text-align:left; color:var(--text-muted); font-weight:600; font-size:0.72rem; border-bottom:2px solid var(--border); white-space:nowrap; }
+.table td { padding:7px 8px; border-bottom:1px solid var(--border); transition:background 0.1s; }
+.thRank { width:28px; }
+.thTeam { min-width:140px; }
+.thForm { min-width:80px; }
+
+.row:hover td { background:var(--bg); }
+.highlighted td { background:var(--blue-light) !important; font-weight:600; }
+
+.teamCell { display:flex; align-items:center; gap:6px; }
+.teamName { color:var(--text); transition:color 0.15s; }
+.teamName:hover { color:var(--blue); }
+
+.rank { width:28px; }
+.rankNum { display:inline-flex; align-items:center; justify-content:center; width:20px; height:20px; border-radius:50%; font-weight:700; font-size:0.78rem; }
+.pts { font-weight:800; color:var(--blue); }
+.pos { color:var(--green-live); font-weight:600; }
+.neg { color:#dc2626; font-weight:600; }
+
+/* Zone color indicators */
+.ucl td:first-child { border-left:4px solid var(--blue); }
+.ucl_q td:first-child { border-left:4px solid #3b82f6; }
+.uel td:first-child { border-left:4px solid var(--orange); }
+.uecl td:first-child { border-left:4px solid #16a34a; }
+.relegate td:first-child { border-left:4px solid #dc2626; }
+
+/* Form badges */
+.formCell { display:flex; align-items:center; gap:3px; }
+.formBadge { display:inline-flex; align-items:center; justify-content:center; width:18px; height:18px; border-radius:3px; font-size:0.62rem; font-weight:800; color:#fff; }
+
+/* Legend */
+.legend { display:flex; gap:1rem; flex-wrap:wrap; padding:8px 4px; font-size:0.72rem; color:var(--text-muted); }
+.dot { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:3px; vertical-align:middle; }
+.dotUcl { background:var(--blue); }
+.dotUelQ { background:#3b82f6; }
+.dotUel { background:var(--orange); }
+.dotRelegate { background:#dc2626; }

@@ -1,41 +1,98 @@
-.loading { text-align:center; padding:4rem; color:var(--text-muted); }
-.header { background:var(--bg-card); border-radius:var(--radius); box-shadow:var(--shadow); padding:2rem; margin-bottom:1.5rem; }
-.competition { display:flex; align-items:center; gap:8px; font-size:0.82rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-bottom:1.5rem; }
+.loading { padding:3rem; text-align:center; color:var(--text-muted); }
+
+.header { background:var(--bg-card); border-radius:var(--radius); padding:1.5rem; margin-bottom:1rem; box-shadow:var(--shadow); }
+.competition { display:flex; align-items:center; gap:8px; margin-bottom:1rem; font-size:0.85rem; color:var(--text-muted); flex-wrap:wrap; }
+.leagueLink { color:var(--text-muted); transition:color 0.15s; }
+.leagueLink:hover { color:var(--blue); }
 .scoreboard { display:flex; align-items:center; justify-content:space-between; gap:1rem; }
 .teamBlock { display:flex; flex-direction:column; align-items:center; gap:8px; flex:1; }
-.teamRight { align-items:flex-end; }
-.teamLogo { width:64px; height:64px; object-fit:contain; }
-.teamName { font-size:1.1rem; font-weight:700; text-align:center; }
-.scoreBlock { display:flex; flex-direction:column; align-items:center; gap:4px; flex-shrink:0; }
-.score { font-size:3rem; font-weight:900; letter-spacing:-0.04em; }
-.matchTime { font-size:2rem; font-weight:700; color:var(--blue); }
-.matchDate { font-size:0.8rem; color:var(--text-muted); }
-.status { font-size:0.72rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.08em; }
-.venue { font-size:0.8rem; color:var(--text-muted); text-align:center; margin-top:8px; }
-.tabs { display:flex; gap:4px; flex-wrap:wrap; margin-bottom:1.5rem; }
-.tab { padding:8px 16px; border-radius:8px; border:1.5px solid var(--border); background:#fff; font-size:0.85rem; font-weight:600; cursor:pointer; transition:all 0.15s; }
-.tabActive { background:var(--blue); color:#fff; border-color:var(--blue); }
-.content { background:var(--bg-card); border-radius:var(--radius); box-shadow:var(--shadow); padding:1.5rem; }
-.summary { display:flex; flex-direction:column; gap:8px; }
-.event { display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--border); font-size:0.88rem; }
-.eventMin { font-weight:700; color:var(--blue); min-width:32px; }
-.eventPlayer { font-weight:600; }
-.eventTeam, .eventAssist { color:var(--text-muted); }
-.lineups { display:grid; grid-template-columns:1fr 1fr; gap:2rem; }
-.lineupTeam { font-size:1rem; font-weight:700; margin-bottom:12px; }
-.playersTitle { font-size:0.72rem; font-weight:700; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.08em; margin:8px 0 4px; }
-.player { display:flex; align-items:center; gap:8px; padding:4px 0; font-size:0.85rem; border-bottom:1px solid var(--border); }
-.playerNum { width:24px; font-size:0.78rem; font-weight:700; color:var(--blue); }
-.playerPos { margin-left:auto; font-size:0.7rem; color:var(--text-muted); }
-.statsWrap { display:flex; flex-direction:column; gap:12px; }
+.teamRight { align-items:center; }
+.teamLogo { width:56px; height:56px; object-fit:contain; }
+.teamName { font-weight:700; font-size:1rem; text-align:center; }
+.scoreBlock { display:flex; flex-direction:column; align-items:center; gap:4px; min-width:120px; }
+.score { font-size:2.5rem; font-weight:900; letter-spacing:-0.02em; }
+.matchTime { font-size:1.8rem; font-weight:800; color:var(--blue); }
+.matchDate { font-size:0.78rem; color:var(--text-muted); text-align:center; }
+.statusBadge { font-size:0.7rem; background:var(--bg); color:var(--text-muted); padding:2px 8px; border-radius:4px; font-weight:600; }
+.elapsed { font-size:1rem; font-weight:700; color:var(--green-live); }
+.venue { font-size:0.8rem; color:var(--text-muted); text-align:center; margin-top:6px; }
+
+.tabs { display:flex; gap:4px; margin-bottom:1rem; flex-wrap:wrap; border-bottom:2px solid var(--border); }
+.tab { padding:8px 16px; border-radius:6px 6px 0 0; font-size:0.85rem; font-weight:600; color:var(--text-muted); border:none; background:none; cursor:pointer; transition:all 0.15s; }
+.tab:hover { color:var(--blue); background:var(--blue-light); }
+.tabActive { color:var(--blue); border-bottom:3px solid var(--blue); margin-bottom:-2px; background:none; }
+
+.content { background:var(--bg-card); border-radius:var(--radius); padding:1.5rem; box-shadow:var(--shadow); }
+
+/* Timeline */
+.timeline { display:flex; flex-direction:column; gap:8px; }
+.event { display:flex; align-items:center; gap:10px; padding:8px 12px; border-radius:6px; background:var(--bg); }
+.eventHome { border-left:3px solid var(--blue); }
+.eventAway { border-left:3px solid var(--orange); flex-direction:row-reverse; text-align:right; }
+.eventMin { font-size:0.78rem; font-weight:700; color:var(--text-muted); min-width:28px; }
+.eventIcon { font-size:1.1rem; }
+.eventInfo { display:flex; flex-direction:column; gap:1px; }
+.eventPlayer { font-weight:600; font-size:0.88rem; }
+.eventAssist { font-size:0.78rem; color:var(--text-muted); }
+.eventTeam { font-size:0.72rem; color:var(--text-muted); }
+
+/* Formation terrain */
+.pitch { position:relative; border-radius:var(--radius); overflow:hidden; max-width:400px; margin:0 auto; }
+.pitchSvg { width:100%; display:block; border-radius:var(--radius); }
+.pitchOverlay { position:absolute; inset:0; }
+.pitchHalf { position:absolute; width:100%; }
+.posRow { position:absolute; width:90%; left:5%; }
+.playerDot { position:absolute; transform:translateX(-50%); display:flex; flex-direction:column; align-items:center; gap:2px; cursor:pointer; }
+.dotCircle { width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.65rem; font-weight:700; color:#fff; border:2px solid rgba(255,255,255,0.6); box-shadow:0 2px 4px rgba(0,0,0,0.3); }
+.dotName { font-size:0.6rem; font-weight:600; color:#fff; text-shadow:0 1px 3px rgba(0,0,0,0.8); white-space:nowrap; max-width:52px; overflow:hidden; text-overflow:ellipsis; }
+.midLine { position:absolute; top:50%; left:5%; right:5%; height:1px; background:rgba(255,255,255,0.3); }
+.formationLabel { position:absolute; top:6px; left:50%; transform:translateX(-50%); font-size:0.7rem; font-weight:700; color:rgba(255,255,255,0.9); background:rgba(0,0,0,0.35); padding:2px 10px; border-radius:10px; }
+.pitchLegend { display:flex; justify-content:center; gap:1.5rem; padding:8px; background:var(--bg); font-size:0.8rem; font-weight:600; }
+.legendDot { display:inline-block; width:12px; height:12px; border-radius:50%; margin-right:4px; vertical-align:middle; }
+
+/* Lineups list */
+.lineups { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; }
+.teamLineup { }
+.lineupTeam { display:flex; align-items:center; gap:8px; font-size:0.95rem; margin-bottom:0.75rem; }
+.playersList { display:flex; flex-direction:column; gap:2px; }
+.playersSection { font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-muted); padding:4px 0; border-bottom:1px solid var(--border); margin:4px 0; }
+.playerRow { display:flex; align-items:center; gap:8px; padding:4px 6px; border-radius:4px; }
+.playerRow:hover { background:var(--bg); }
+.playerNum { font-size:0.78rem; font-weight:700; color:var(--text-muted); min-width:20px; }
+.playerName { font-size:0.85rem; flex:1; }
+.playerPos { font-size:0.7rem; font-weight:700; }
+
+/* Stats */
+.statsTeams { display:flex; justify-content:space-between; margin-bottom:1rem; }
+.statsTeamName { display:flex; align-items:center; gap:6px; font-weight:700; font-size:0.9rem; }
+.statsWrap { display:flex; flex-direction:column; gap:14px; }
 .statRow { display:flex; align-items:center; gap:12px; }
-.statVal { width:40px; font-weight:700; font-size:0.9rem; text-align:center; }
+.statVal { min-width:40px; text-align:center; font-size:0.92rem; }
 .statMid { flex:1; display:flex; flex-direction:column; gap:4px; align-items:center; }
-.statBar { width:100%; height:6px; background:var(--bg); border-radius:3px; overflow:hidden; }
-.statBarFill { height:100%; background:var(--blue); border-radius:3px; }
-.statLabel { font-size:0.72rem; color:var(--text-muted); text-align:center; }
-.h2hRow { display:flex; align-items:center; gap:12px; padding:10px; background:var(--bg); border-radius:6px; font-size:0.85rem; }
-.h2hDate { font-size:0.72rem; color:var(--text-muted); min-width:80px; }
+.statLabel { font-size:0.75rem; color:var(--text-muted); text-align:center; }
+.statBarWrap { width:100%; height:8px; border-radius:4px; overflow:hidden; display:flex; }
+.statBarBlue { height:100%; background:var(--blue); transition:width 0.6s ease; }
+.statBarOrange { height:100%; background:var(--orange); transition:width 0.6s ease; }
+
+/* H2H */
+.h2hSummary { display:flex; justify-content:space-around; background:var(--bg); border-radius:var(--radius); padding:1.2rem; margin-bottom:1.2rem; }
+.h2hStat { display:flex; flex-direction:column; align-items:center; gap:4px; font-size:0.8rem; color:var(--text-muted); }
+.h2hNum { font-size:1.8rem; font-weight:900; color:var(--text); line-height:1; }
+.h2hRow { display:flex; align-items:center; gap:8px; padding:8px 10px; background:var(--bg); border-radius:6px; font-size:0.83rem; transition:background 0.1s; color:var(--text); }
+.h2hRow:hover { background:var(--blue-light); }
+.h2hDate { font-size:0.75rem; color:var(--text-muted); min-width:80px; flex-shrink:0; }
 .h2hTeam { flex:1; font-weight:600; }
-.h2hScore { font-weight:700; min-width:50px; text-align:center; }
-@media(max-width:600px) { .scoreboard { flex-direction:column; } .lineups { grid-template-columns:1fr; } }
+.h2hWinner { color:var(--blue); }
+.h2hScore { font-weight:800; min-width:40px; text-align:center; }
+.h2hLeague { font-size:0.72rem; color:var(--text-muted); flex-shrink:0; }
+
+@media(max-width:600px) {
+  .scoreboard { gap:0.5rem; }
+  .teamLogo { width:36px; height:36px; }
+  .score { font-size:1.8rem; }
+  .lineups { grid-template-columns:1fr; }
+  .tabs { gap:2px; }
+  .tab { padding:6px 10px; font-size:0.78rem; }
+  .h2hDate { display:none; }
+  .h2hLeague { display:none; }
+}

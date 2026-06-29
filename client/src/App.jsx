@@ -1,5 +1,5 @@
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { lazy, Suspense } from 'react';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { lazy, Suspense, useEffect } from 'react';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
 import Navbar from './components/Navbar';
@@ -20,30 +20,43 @@ const Admin       = lazy(() => import('./pages/Admin'));
 const AdminLogin  = lazy(() => import('./pages/AdminLogin'));
 const Joueurs     = lazy(() => import('./pages/Joueurs'));
 const Joueur      = lazy(() => import('./pages/Joueur'));
+const Equipes     = lazy(() => import('./pages/Equipes'));
+const NotFound    = lazy(() => import('./pages/NotFound'));
 
-const Loader = () => <div style={{minHeight:'40vh',display:'flex',alignItems:'center',justifyContent:'center',color:'var(--text-muted)',fontWeight:600}}>Chargement...</div>;
+const Loader = () => (
+  <div style={{minHeight:'40vh',display:'flex',alignItems:'center',justifyContent:'center',color:'var(--text-muted)',fontWeight:600}}>
+    Chargement...
+  </div>
+);
 
 function AppLayout() {
   const location = useLocation();
   const isAdmin = location.pathname.startsWith('/admin');
+
+  useEffect(() => {
+    const saved = localStorage.getItem('kz_theme');
+    if (saved) document.documentElement.setAttribute('data-theme', saved);
+  }, []);
+
   return (
     <>
       {!isAdmin && <Navbar />}
       <Suspense fallback={<Loader />}>
         <Routes>
-          <Route path="/"              element={<Home />} />
-          <Route path="/matches"       element={<Matches />} />
-          <Route path="/match/:id"     element={<Match />} />
-          <Route path="/transferts"    element={<Transferts />} />
-          <Route path="/actu"          element={<Actu />} />
-          <Route path="/article/:slug" element={<Article />} />
-          <Route path="/classements"   element={<Classements />} />
-          <Route path="/pronos"        element={<Pronos />} />
-          <Route path="/admin"         element={<Admin />} />
-          <Route path="/admin/login"   element={<AdminLogin />} />
-          <Route path="/joueurs"       element={<Joueurs />} />
-          <Route path="/joueur/:id"    element={<Joueur />} />
-          <Route path="*"              element={<Navigate to="/" replace />} />
+          <Route path="/"               element={<Home />} />
+          <Route path="/matches"        element={<Matches />} />
+          <Route path="/match/:id"      element={<Match />} />
+          <Route path="/transferts"     element={<Transferts />} />
+          <Route path="/actu"           element={<Actu />} />
+          <Route path="/article/:slug"  element={<Article />} />
+          <Route path="/classements"    element={<Classements />} />
+          <Route path="/pronos"         element={<Pronos />} />
+          <Route path="/admin"          element={<Admin />} />
+          <Route path="/admin/login"    element={<AdminLogin />} />
+          <Route path="/joueurs"        element={<Joueurs />} />
+          <Route path="/joueur/:id"     element={<Joueur />} />
+          <Route path="/equipes/:id"    element={<Equipes />} />
+          <Route path="*"               element={<NotFound />} />
         </Routes>
       </Suspense>
     </>
