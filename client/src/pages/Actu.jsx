@@ -6,11 +6,11 @@ import styles from './Actu.module.css';
 
 const FILTERS = [
   { key: null,        label: 'Tous' },
-  { key: 'TRANSFERT', label: '🔥 Transferts' },
-  { key: 'ANALYSE',   label: '📊 Analyses' },
-  { key: 'INTERVIEW', label: '🎙 Interviews' },
-  { key: 'RESULTATS', label: '⚽ Résultats' },
-  { key: 'ACTU',      label: '📰 Actu' },
+  { key: 'TRANSFERT', label: 'Transferts' },
+  { key: 'ANALYSE',   label: 'Analyses' },
+  { key: 'INTERVIEW', label: 'Interviews' },
+  { key: 'RESULTATS', label: 'Résultats' },
+  { key: 'ACTU',      label: 'Actu' },
 ];
 
 const CATEGORY_COLOR = {

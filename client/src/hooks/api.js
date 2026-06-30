@@ -98,6 +98,14 @@ export const useLatestTransfers = () =>
     staleTime: 2 * 60 * 60 * 1000,
   });
 
+export const useWorldCupFixtures = () =>
+  useQuery({
+    queryKey: ['worldcup-fixtures'],
+    queryFn: () => api.get('/football/fixtures/worldcup').then(r => r.data),
+    staleTime: 60 * 1000,
+    refetchInterval: 60 * 1000,
+  });
+
 export const useTeam = (id) =>
   useQuery({
     queryKey: ['team', id],
@@ -125,9 +133,20 @@ export const useTeamSquad = (id) =>
 export const useSearch = (q) =>
   useQuery({
     queryKey: ['search', q],
-    queryFn: () => api.get('/football/search', { params: { q } }).then(r => r.data),
+    queryFn: async () => {
+      const [footballRes, articlesRes] = await Promise.allSettled([
+        api.get('/football/search', { params: { q } }).then(r => r.data),
+        api.get('/articles/search', { params: { q } }).then(r => r.data),
+      ]);
+      return {
+        players: footballRes.value?.players ?? [],
+        teams:   footballRes.value?.teams   ?? [],
+        articles: articlesRes.value ?? [],
+      };
+    },
     enabled: q?.length >= 2,
     staleTime: 5 * 60 * 1000,
+    retry: 1,
   });
 
 // Articles hooks
@@ -172,6 +191,21 @@ export const useTransferNews = () =>
     queryKey: ['transfer-news'],
     queryFn: () => api.get('/football/transfers/news').then(r => r.data),
     staleTime: 10 * 60 * 1000,
+  });
+
+export const useNewsLatest = (limit = 24) =>
+  useQuery({
+    queryKey: ['news-latest', limit],
+    queryFn: () => api.get('/news/latest', { params: { limit } }).then(r => r.data),
+    staleTime: 5 * 60 * 1000,
+  });
+
+export const useNewsByCategory = (cat) =>
+  useQuery({
+    queryKey: ['news-category', cat],
+    queryFn: () => api.get(`/news/category/${cat}`).then(r => r.data),
+    enabled: !!cat,
+    staleTime: 5 * 60 * 1000,
   });
 
 export const usePlayerSearch = (query) =>

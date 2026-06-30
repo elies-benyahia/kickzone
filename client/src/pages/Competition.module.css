@@ -1,0 +1,160 @@
+/* Competition page — OneFootball hero style */
+.page { min-height: 100vh; }
+
+/* ─── Hero ──────────────────────────────────────────────────────── */
+.hero {
+  position: relative;
+  background: linear-gradient(135deg, #0a0a0f 0%, #111827 100%);
+  padding: 40px var(--gutter) 32px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  min-height: 180px;
+}
+.heroGlow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.heroContent {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex: 1;
+}
+.heroLogo {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 16px rgba(0,0,0,0.4));
+  flex-shrink: 0;
+}
+.heroTitle {
+  font-size: clamp(2rem, 5vw, 4rem);
+  font-weight: 900;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+.heroBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(239,68,68,0.15);
+  border: 1px solid rgba(239,68,68,0.25);
+  color: #f87171;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: 20px;
+  margin-left: 16px;
+}
+.heroBack {
+  position: absolute;
+  top: 20px;
+  right: var(--gutter);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #9ca3af;
+  text-decoration: none;
+}
+.heroBack:hover { color: #fff; }
+
+/* ─── Tabs ──────────────────────────────────────────────────────── */
+.tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  padding: 0 var(--gutter);
+  background: var(--bg-card);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.tabs::-webkit-scrollbar { display: none; }
+
+.tab {
+  padding: 14px 18px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-family: var(--font);
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+  transition: color 0.15s, border-color 0.15s;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+.tab:hover { color: var(--text); }
+.tabActive { color: var(--text); border-bottom-color: var(--blue-light); }
+
+/* ─── Content ───────────────────────────────────────────────────── */
+.content {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 24px var(--gutter) 48px;
+}
+
+.section { display: flex; flex-direction: column; gap: 8px; }
+
+.group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+.groupLabel {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding: 8px 0 4px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 4px;
+}
+
+.empty { text-align: center; padding: 4rem; color: var(--text-muted); font-size: 0.9rem; }
+
+/* ─── News grid ─────────────────────────────────────────────────── */
+.newsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+@media (max-width: 1100px) { .newsGrid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 768px)  { .newsGrid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 500px)  { .newsGrid { grid-template-columns: 1fr; } }
+
+/* ─── Standings table ───────────────────────────────────────────── */
+.tableWrap { overflow-x: auto; border-radius: var(--radius); border: 1px solid var(--border); }
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.84rem;
+}
+.table th {
+  padding: 10px 12px;
+  text-align: left;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  background: var(--bg-hover);
+  border-bottom: 1px solid var(--border);
+}
+.table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+}
+.table tr:last-child td { border-bottom: none; }
+.table tr:hover td { background: var(--bg-hover); }
+
+.rank { font-weight: 700; color: var(--text-muted); width: 32px; }
+.thTeam { padding-left: 12px; }
+.tdTeam { display: flex; align-items: center; gap: 8px; min-width: 160px; }
+.pts { font-weight: 800; color: var(--text); }
+
+.rowQualified td:first-child { border-left: 2px solid var(--blue-light); }
+.rowRelegate td:first-child { border-left: 2px solid #ef4444; }

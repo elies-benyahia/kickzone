@@ -3,7 +3,7 @@ const { list, create, update, remove } = require('../controllers/pronosticContro
 const { authenticate, requireAdmin } = require('../middlewares/auth');
 
 router.get('/', list);
-router.post('/', authenticate, requireAdmin, create);
+router.post('/', authenticate, create);         // tout utilisateur connecté
 router.put('/:id', authenticate, requireAdmin, update);
 router.delete('/:id', authenticate, requireAdmin, remove);
 

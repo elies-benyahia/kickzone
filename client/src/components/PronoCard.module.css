@@ -1,16 +1,29 @@
-.card { background:var(--bg-card); border-radius:var(--radius); box-shadow:var(--shadow); padding:16px; display:flex; flex-direction:column; gap:10px; }
+.card { background:var(--bg-card); border-radius:var(--radius); box-shadow:var(--shadow); padding:16px; display:flex; flex-direction:column; gap:12px; }
 .header { display:flex; justify-content:space-between; align-items:center; }
-.league { font-size:0.72rem; font-weight:700; color:var(--blue); text-transform:uppercase; letter-spacing:0.05em; }
+.league { font-size:0.7rem; font-weight:700; color:var(--blue); text-transform:uppercase; letter-spacing:0.06em; background:var(--blue-light); padding:2px 8px; border-radius:4px; }
 .date { font-size:0.72rem; color:var(--text-muted); }
-.match { font-size:1rem; font-weight:700; color:var(--text); }
-.match span { color:var(--text-muted); font-weight:400; margin:0 6px; }
-.prediction { display:flex; flex-direction:column; gap:2px; }
-.label { font-size:0.72rem; color:var(--text-muted); }
-.value { font-size:0.9rem; font-weight:600; color:var(--text); }
+
+.match { display:flex; align-items:center; gap:8px; }
+.team { display:flex; align-items:center; gap:6px; flex:1; font-size:0.9rem; font-weight:700; }
+.teamRight { flex-direction:row-reverse; text-align:right; }
+.teamLogo { object-fit:contain; flex-shrink:0; }
+.vs { font-size:0.75rem; font-weight:700; color:var(--text-muted); padding:0 4px; }
+.scorePredict { display:flex; align-items:center; gap:4px; }
+.scoreNum { font-size:1.4rem; font-weight:900; color:var(--blue); line-height:1; min-width:22px; text-align:center; }
+.scoreDash { font-size:1rem; font-weight:700; color:var(--text-muted); }
+.pronoAuthor { font-size:0.72rem; color:var(--text-muted); text-align:right; }
+
+.prediction { display:flex; flex-direction:column; gap:3px; background:var(--bg); border-radius:6px; padding:10px; }
+.predLabel { font-size:0.68rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-muted); }
+.predValue { font-size:0.88rem; font-weight:600; color:var(--text); line-height:1.4; }
+
 .confidence { display:flex; align-items:center; gap:8px; }
-.bar { flex:1; height:6px; background:var(--bg); border-radius:3px; overflow:hidden; }
-.fill { height:100%; border-radius:3px; transition:width 0.3s; }
-.pct { font-size:0.78rem; font-weight:700; color:var(--text-muted); min-width:32px; }
-.result { padding:8px 12px; border-radius:6px; font-size:0.82rem; font-weight:700; text-align:center; }
+.confLabel { font-size:0.72rem; color:var(--text-muted); min-width:60px; }
+.confBar { flex:1; height:7px; background:var(--bg); border-radius:4px; overflow:hidden; }
+.confFill { height:100%; border-radius:4px; transition:width 0.5s ease; }
+.confPct { font-size:0.82rem; font-weight:800; min-width:36px; text-align:right; }
+
+.result { padding:8px 12px; border-radius:6px; font-size:0.85rem; font-weight:700; text-align:center; }
 .correct { background:#dcfce7; color:var(--green-live); }
 .wrong { background:#fee2e2; color:#dc2626; }
+.pending { padding:6px 12px; border-radius:6px; font-size:0.78rem; color:var(--text-muted); background:var(--bg); text-align:center; }

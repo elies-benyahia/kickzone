@@ -23,6 +23,7 @@ app.use('/api/articles',   require('./routes/articles'));
 app.use('/api/football',   require('./routes/football'));
 app.use('/api/pronostics', require('./routes/pronostics'));
 app.use('/api/auth',       require('./routes/auth'));
+app.use('/api/news',       require('./routes/news'));
 
 app.get('/api/health', (req, res) => res.json({ status: 'ok', app: 'KickZone API', ts: new Date().toISOString() }));
 

@@ -3,6 +3,7 @@ import { lazy, Suspense, useEffect } from 'react';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
 import Navbar from './components/Navbar';
+import { AuthProvider } from './contexts/AuthContext';
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 5 * 60 * 1000, retry: 1, refetchOnWindowFocus: false } },
@@ -22,6 +23,11 @@ const Joueurs     = lazy(() => import('./pages/Joueurs'));
 const Joueur      = lazy(() => import('./pages/Joueur'));
 const Equipes     = lazy(() => import('./pages/Equipes'));
 const NotFound    = lazy(() => import('./pages/NotFound'));
+const Login        = lazy(() => import('./pages/Login'));
+const Register     = lazy(() => import('./pages/Register'));
+const Profile      = lazy(() => import('./pages/Profile'));
+const CoupeDuMonde  = lazy(() => import('./pages/CoupeDuMonde'));
+const Competition   = lazy(() => import('./pages/Competition'));
 
 const Loader = () => (
   <div style={{minHeight:'40vh',display:'flex',alignItems:'center',justifyContent:'center',color:'var(--text-muted)',fontWeight:600}}>
@@ -35,7 +41,11 @@ function AppLayout() {
 
   useEffect(() => {
     const saved = localStorage.getItem('kz_theme');
-    if (saved) document.documentElement.setAttribute('data-theme', saved);
+    if (saved === 'light') {
+      document.documentElement.setAttribute('data-theme', 'light');
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+    }
   }, []);
 
   return (
@@ -56,6 +66,11 @@ function AppLayout() {
           <Route path="/joueurs"        element={<Joueurs />} />
           <Route path="/joueur/:id"     element={<Joueur />} />
           <Route path="/equipes/:id"    element={<Equipes />} />
+          <Route path="/connexion"        element={<Login />} />
+          <Route path="/inscription"      element={<Register />} />
+          <Route path="/profil"           element={<Profile />} />
+          <Route path="/coupe-du-monde"    element={<CoupeDuMonde />} />
+          <Route path="/competition/:id"  element={<Competition />} />
           <Route path="*"               element={<NotFound />} />
         </Routes>
       </Suspense>
@@ -67,7 +82,9 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <AppLayout />
+        <AuthProvider>
+          <AppLayout />
+        </AuthProvider>
       </BrowserRouter>
       <Toaster position="bottom-right" toastOptions={{ style:{ fontFamily:'var(--font)', fontSize:'0.85rem' } }} />
     </QueryClientProvider>

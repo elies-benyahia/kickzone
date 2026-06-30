@@ -1,14 +1,30 @@
-.title { font-size:1.5rem; font-weight:900; margin-bottom:1.5rem; }
-.datePicker { display:flex; gap:4px; overflow-x:auto; padding-bottom:8px; margin-bottom:1rem; }
-.dayBtn { display:flex; flex-direction:column; align-items:center; padding:8px 10px; border-radius:8px; border:1.5px solid var(--border); background:#fff; cursor:pointer; min-width:52px; transition:all 0.15s; }
-.daySelected { background:var(--blue); color:#fff; border-color:var(--blue); }
-.dayToday:not(.daySelected) { border-color:var(--blue); }
-.dayName { font-size:0.65rem; font-weight:600; text-transform:capitalize; }
-.dayNum { font-size:1rem; font-weight:700; }
-.leagueFilter { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:1.5rem; }
-.filterBtn { padding:6px 14px; border-radius:20px; border:1.5px solid var(--border); background:#fff; font-size:0.82rem; font-weight:600; cursor:pointer; transition:all 0.15s; }
-.filterActive { background:var(--blue); color:#fff; border-color:var(--blue); }
-.group { margin-bottom:1.5rem; }
-.groupHeader { display:flex; align-items:center; gap:8px; font-size:0.82rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em; padding:8px 0; border-bottom:2px solid var(--border); margin-bottom:8px; }
+/* Matches — OneFootball style */
+.page { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--gutter) 40px; }
+.pageHeader { padding: 20px 0 16px; }
+.pageTitle { font-size: 1.5rem; font-weight: 900; color: var(--text); letter-spacing: -0.03em; }
+
+.datePicker { display:flex; gap:4px; overflow-x:auto; padding:0 0 12px; margin-bottom:12px; scrollbar-width:none; }
+.datePicker::-webkit-scrollbar { display:none; }
+
+.dayBtn { display:flex; flex-direction:column; align-items:center; padding:8px 10px; border-radius:8px; border:1px solid var(--border); background:var(--bg-card); cursor:pointer; min-width:50px; flex-shrink:0; transition:all 0.15s; position:relative; font-family:var(--font); color:var(--text-muted); }
+.dayBtn:hover { background:var(--bg-hover); color:var(--text); }
+.daySelected { background:var(--blue) !important; color:#fff !important; border-color:var(--blue) !important; }
+.dayToday { border-color:var(--blue-light); color:var(--blue-light); }
+.dayName { font-size:0.62rem; font-weight:600; text-transform:capitalize; letter-spacing:0.03em; }
+.dayNum  { font-size:0.95rem; font-weight:700; margin-top:2px; }
+.dayTodayDot { position:absolute; bottom:4px; left:50%; transform:translateX(-50%); width:4px; height:4px; border-radius:50%; background:var(--blue-light); }
+.daySelected .dayTodayDot { background:rgba(255,255,255,0.7); }
+
+.leagueFilter { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:20px; }
+.filterChip { display:inline-flex; align-items:center; gap:6px; padding:5px 12px; border-radius:20px; border:1px solid var(--border); background:var(--bg-card); font-size:0.8rem; font-weight:500; color:var(--text-muted); cursor:pointer; font-family:var(--font); transition:all 0.15s; }
+.filterChip:hover { color:var(--text); border-color:var(--blue-light); }
+.filterActive { background:var(--blue) !important; color:#fff !important; border-color:var(--blue) !important; }
+
+.content { display:flex; flex-direction:column; gap:16px; }
+.group {}
+.groupHeader { display:flex; align-items:center; gap:8px; padding:10px 0 8px; border-bottom:1px solid var(--border); margin-bottom:6px; }
+.groupName { font-size:0.82rem; font-weight:700; color:var(--text); flex:1; }
+.groupCount { font-size:0.72rem; color:var(--text-muted); }
 .matchList { display:flex; flex-direction:column; gap:4px; }
-.loading, .empty { text-align:center; padding:3rem; color:var(--text-muted); }
+.loading { display:flex; flex-direction:column; gap:6px; }
+.empty { text-align:center; padding:4rem; color:var(--text-muted); font-size:0.9rem; }

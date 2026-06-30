@@ -1,19 +1,20 @@
 .card {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 12px;
+  padding: 14px 16px;
   background: var(--bg-card);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
-  box-shadow: var(--shadow);
   cursor: pointer;
-  transition: box-shadow 0.15s;
+  transition: background 0.15s, border-color 0.15s;
   text-decoration: none;
+  gap: 8px;
 }
-.card:hover { box-shadow: var(--shadow-md); }
-.team { display: flex; align-items: center; gap: 6px; flex: 1; }
+.card:hover { background: var(--bg-hover); border-color: rgba(59,130,246,0.2); }
+.team { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
 .teamRight { flex-direction: row-reverse; }
-.name { font-size: 0.82rem; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.center { flex-shrink: 0; text-align: center; min-width: 70px; }
-.score { font-size: 1rem; font-weight: 700; color: var(--text); }
-.time { font-size: 0.85rem; font-weight: 700; color: var(--blue); }
+.name { font-size: 0.84rem; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.center { flex-shrink: 0; text-align: center; min-width: 72px; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.score { font-size: 1.05rem; font-weight: 800; color: var(--text); letter-spacing: -0.02em; }
+.time { font-size: 0.88rem; font-weight: 700; color: var(--blue-light); }
+.statusLabel { font-size: 0.68rem; color: var(--text-muted); font-weight: 500; }

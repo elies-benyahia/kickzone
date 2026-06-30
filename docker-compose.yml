@@ -3,17 +3,18 @@ version: '3.9'
 services:
   db:
     image: mysql:8.0
-    container_name: warzone_cdl_db
+    container_name: kickzone_db
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE:      ${DB_NAME}
+      MYSQL_USER:          ${DB_USER}
+      MYSQL_PASSWORD:      ${DB_PASSWORD}
     ports:
       - "3306:3306"
     volumes:
       - db_data:/var/lib/mysql
+      - ./server/database/schema.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       timeout: 10s
@@ -26,24 +27,25 @@ services:
     build:
       context: ./server
       dockerfile: Dockerfile
-    container_name: warzone_cdl_app
+    container_name: kickzone_app
     restart: unless-stopped
     depends_on:
       db:
         condition: service_healthy
     environment:
-      DATABASE_URL: mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/${MYSQL_DATABASE}
-      JWT_SECRET: ${JWT_SECRET}
-      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}
-      PORT: 3001
-      NODE_ENV: production
-      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS}
-      SCRAPE_ENABLED: ${SCRAPE_ENABLED}
-      SCRAPE_INTERVAL_MINUTES: ${SCRAPE_INTERVAL_MINUTES}
-      ADMIN_EMAIL: ${ADMIN_EMAIL}
-      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
-      RATE_LIMIT_WINDOW_MS: ${RATE_LIMIT_WINDOW_MS}
-      RATE_LIMIT_MAX_LOGIN: ${RATE_LIMIT_MAX_LOGIN}
+      DB_HOST:     db
+      DB_PORT:     3306
+      DB_USER:     ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME:     ${DB_NAME}
+      JWT_SECRET:         ${JWT_SECRET}
+      JWT_EXPIRES_IN:     ${JWT_EXPIRES_IN}
+      PORT:               3001
+      NODE_ENV:           production
+      ALLOWED_ORIGINS:    ${ALLOWED_ORIGINS}
+      FOOTBALL_API_KEY:   ${FOOTBALL_API_KEY}
+      ADMIN_EMAIL:        ${ADMIN_EMAIL}
+      ADMIN_PASSWORD:     ${ADMIN_PASSWORD}
     expose:
       - "3001"
     networks:
@@ -51,7 +53,7 @@ services:
 
   nginx:
     image: nginx:alpine
-    container_name: warzone_cdl_nginx
+    container_name: kickzone_nginx
     restart: unless-stopped
     depends_on:
       - app
