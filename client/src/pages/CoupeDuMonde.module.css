@@ -251,6 +251,21 @@
   text-align: right;
 }
 
+.matchRowRight {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  min-width: 80px;
+}
+
+.matchPen {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
 .upcomingNote {
   margin-top: 2rem;
   padding: 1rem 1.25rem;
@@ -262,8 +277,131 @@
   border-left: 3px solid var(--blue);
 }
 
+/* ─── Bracket / Arbre du tournoi ─────────────────────────── */
+
+.bracketScroll {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0 0 1.5rem 0;
+  -webkit-overflow-scrolling: touch;
+}
+
+.bracketInner {
+  display: flex;
+  align-items: flex-start;
+  min-width: max-content;
+  gap: 0;
+}
+
+.bCol {
+  width: 184px;
+  flex-shrink: 0;
+}
+
+.bRoundLabel {
+  font-size: 0.62rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--blue);
+  text-align: center;
+  padding: 6px 4px;
+  border-bottom: 2px solid var(--blue);
+  margin-bottom: 0;
+  white-space: nowrap;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bCard {
+  width: 176px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: box-shadow 0.15s;
+}
+
+.bCard:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.bCardPlayed {
+  border-color: var(--blue);
+  border-left-width: 3px;
+}
+
+.bCardFinal {
+  border-color: #f59e0b;
+  box-shadow: 0 0 16px rgba(245,158,11,0.25);
+  width: 180px;
+}
+
+.bTeamRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 10px;
+  gap: 8px;
+  min-height: 28px;
+}
+
+.bTeamBorder {
+  border-top: 1px solid var(--border);
+}
+
+.bWinner {
+  background: rgba(26,86,219,0.1);
+}
+
+.bWinner .bName {
+  font-weight: 700;
+  color: var(--blue);
+}
+
+.bLoser {
+  opacity: 0.45;
+}
+
+.bName {
+  flex: 1;
+  font-size: 0.76rem;
+  font-weight: 500;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bScore {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--blue);
+  flex-shrink: 0;
+  min-width: 16px;
+  text-align: right;
+}
+
+.bDateRow {
+  font-size: 0.6rem;
+  color: var(--text-muted);
+  text-align: center;
+  padding: 4px 8px;
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+  white-space: nowrap;
+  line-height: 1.2;
+}
+
+.bPen {
+  color: var(--orange, #f97316);
+  font-weight: 700;
+}
+
 @media(max-width: 600px) {
   .groupsGrid { grid-template-columns: 1fr; }
   .matchRow { grid-template-columns: 60px 1fr; }
-  .matchResult { display: none; }
+  .matchRowRight { display: none; }
 }

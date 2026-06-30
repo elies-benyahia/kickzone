@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useArticles, useTransferNews } from '../hooks/api';
 import ArticleCard from '../components/ArticleCard';
-import ShinyText from '../components/ShinyText';
 import styles from './Transferts.module.css';
 
 /* ─── Données réelles mercato été 2026 ─────────────────────────────── */
@@ -245,13 +244,7 @@ export default function Transferts() {
             <div>
               <h1 className={styles.title}>Mercato Été 2026</h1>
               <p className={styles.subtitle}>
-                <ShinyText
-                  text="Tous les transferts officiels et en cours · mis à jour en direct"
-                  color="var(--text-muted)"
-                  shineColor="var(--blue)"
-                  speed={4}
-                  spread={90}
-                />
+                Tous les transferts officiels et en cours · mis à jour en direct
               </p>
             </div>
             <input

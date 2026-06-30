@@ -7,7 +7,7 @@ const list = async (req, res, next) => {
 
 const create = async (req, res, next) => {
   try {
-    const prono = await pronosticService.createPronostic({ ...req.body, userId: req.user.id });
+    const prono = await pronosticService.createPronostic({ ...req.body, userId: req.user?.id ?? null });
     res.status(201).json(prono);
   } catch (e) { next(e); }
 };

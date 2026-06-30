@@ -201,14 +201,7 @@ function UserMenu() {
     return () => document.removeEventListener('mousedown', h);
   }, []);
 
-  if (!user) {
-    return (
-      <div className={styles.authBtns}>
-        <Link to="/connexion" className={styles.btnLogin}>Se connecter</Link>
-        <Link to="/inscription" className={styles.btnRegister}>S'inscrire</Link>
-      </div>
-    );
-  }
+  if (!user) return null;
 
   const initial = (user.username?.[0] ?? user.email[0]).toUpperCase();
   return (

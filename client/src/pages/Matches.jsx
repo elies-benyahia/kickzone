@@ -1,5 +1,5 @@
 /* Matches.jsx — OneFootball style redesign */
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useFixturesByDate } from '../hooks/api';
 import MatchCard from '../components/MatchCard';
 import styles from './Matches.module.css';
@@ -18,7 +18,6 @@ const LEAGUES = [
 ];
 
 const fmt = (d) => d.toISOString().split('T')[0];
-const addDays = (d, n) => { const r = new Date(d); r.setDate(r.getDate() + n); return r; };
 
 export default function Matches() {
   const [date, setDate]   = useState(new Date());
@@ -26,6 +25,11 @@ export default function Matches() {
   const dateStr = fmt(date);
   const { data: fixtures, isLoading } = useFixturesByDate(dateStr);
   const today = fmt(new Date());
+  const todayBtnRef = useRef(null);
+
+  useEffect(() => {
+    todayBtnRef.current?.scrollIntoView({ inline: 'center', behavior: 'smooth', block: 'nearest' });
+  }, []);
 
   const filtered = (fixtures ?? [])
     .filter(f => !filter || f.league.id === filter)
@@ -45,7 +49,13 @@ export default function Matches() {
     grouped[key].matches.push(f);
   });
 
-  const days = Array.from({ length: 15 }, (_, i) => addDays(new Date(), i - 7));
+  // Période complète Coupe du Monde 2026 + quelques jours de marge
+  const WC_START = new Date(2026, 5, 11); // 11 Juin
+  const WC_END   = new Date(2026, 6, 22); // 22 Juillet
+  const days = [];
+  for (let d = new Date(WC_START); d <= WC_END; d.setDate(d.getDate() + 1)) {
+    days.push(new Date(d));
+  }
 
   return (
     <div className={styles.page}>
@@ -62,8 +72,9 @@ export default function Matches() {
           return (
             <button
               key={ds}
+              ref={isToday ? todayBtnRef : null}
               className={`${styles.dayBtn} ${isSelected ? styles.daySelected : ''} ${isToday && !isSelected ? styles.dayToday : ''}`}
-              onClick={() => setDate(d)}
+              onClick={() => setDate(new Date(d))}
             >
               <span className={styles.dayName}>{d.toLocaleDateString('fr-FR', { weekday: 'short' })}</span>
               <span className={styles.dayNum}>{d.getDate()}</span>

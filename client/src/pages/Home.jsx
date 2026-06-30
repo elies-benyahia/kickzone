@@ -187,6 +187,13 @@ function TopNewsHero({ articles }) {
   );
 }
 
+const FALLBACK_ARTICLES = [
+  { id: 'f1', title: 'Coupe du Monde 2026 : le tournoi bat des records d\'audience à travers le monde', link: 'https://www.lequipe.fr', sourceName: "L'Équipe", imageUrl: null, publishedAt: new Date() },
+  { id: 'f2', title: 'Mercato : les plus grands transferts de l\'été 2026 décryptés', link: 'https://www.footmercato.net', sourceName: 'Foot Mercato', imageUrl: null, publishedAt: new Date() },
+  { id: 'f3', title: 'Équipe de France : les convoqués pour le Mondial et les enjeux tactiques', link: 'https://rmcsport.bfmtv.com', sourceName: 'RMC Sport', imageUrl: null, publishedAt: new Date() },
+  { id: 'f4', title: 'Champions League : le tirage au sort de la saison 2026-27 dévoilé', link: 'https://www.eurosport.fr', sourceName: 'Eurosport', imageUrl: null, publishedAt: new Date() },
+];
+
 export default function Home() {
   const { data: fixtures }  = useFixturesToday();
   const { data: newsItems, isLoading: newsLoading } = useNewsLatest(20);
@@ -195,10 +202,11 @@ export default function Home() {
 
   const rssNews    = newsItems ?? [];
   const dbArticles = articlesData?.data ?? [];
-  const allArticles = [...rssNews, ...dbArticles].slice(0, 20);
+  const fetched    = [...rssNews, ...dbArticles].slice(0, 20);
+  const allArticles = !newsLoading && fetched.length === 0 ? FALLBACK_ARTICLES : fetched;
 
-  const heroArticles    = allArticles.slice(0, 2);
-  const gridArticles    = allArticles.slice(2, 14);
+  const heroArticles = allArticles.slice(0, 2);
+  const gridArticles = allArticles.slice(2, 14);
 
   return (
     <div className={styles.layout}>
@@ -256,10 +264,3 @@ export default function Home() {
   );
 }
 
-function EmptyState({ msg }) {
-  return (
-    <div style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.85rem', padding: '1.5rem' }}>
-      {msg}
-    </div>
-  );
-}

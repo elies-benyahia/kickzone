@@ -1,26 +1,23 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
 import { usePronostics, useCreatePronostic } from '../hooks/api';
-import { useAuth } from '../contexts/AuthContext';
 import PronoCard from '../components/PronoCard';
 import styles from './Pronos.module.css';
 import toast from 'react-hot-toast';
 
 const FILTERS = [
-  { key: 'all',       label: 'Tous' },
-  { key: 'CORRECT',  label: '✅ Corrects' },
-  { key: 'RATE',     label: '❌ Ratés' },
-  { key: null,       label: '⏳ En attente' },
+  { key: 'all',      label: 'Tous' },
+  { key: 'CORRECT', label: '✅ Corrects' },
+  { key: 'RATE',    label: '❌ Ratés' },
+  { key: null,      label: '⏳ En attente' },
 ];
 
 function PronoForm({ onClose }) {
   const { mutateAsync, isPending } = useCreatePronostic();
-  const { user } = useAuth();
   const [form, setForm] = useState({
     homeTeam: '', awayTeam: '',
     scoreHome: '', scoreAway: '',
     prediction: '', confidence: 65,
-    league: '', matchDate: '',
+    league: '', matchDate: '', author: '',
   });
 
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
@@ -37,12 +34,13 @@ function PronoForm({ onClose }) {
         awayTeam:   form.awayTeam,
         scoreHome:  form.scoreHome !== '' ? Number(form.scoreHome) : null,
         scoreAway:  form.scoreAway !== '' ? Number(form.scoreAway) : null,
-        prediction: form.prediction || `${form.homeTeam} vs ${form.awayTeam} — Pronostic de ${user?.username ?? user?.email}`,
+        prediction: form.prediction || `${form.homeTeam} vs ${form.awayTeam}`,
         confidence: Number(form.confidence),
         league:     form.league || null,
         matchDate:  form.matchDate,
+        author:     form.author || 'Anonyme',
       });
-      toast.success('Pronostic créé !');
+      toast.success('Pronostic publié !');
       onClose();
     } catch (err) {
       toast.error(err.response?.data?.error || 'Erreur lors de la création');
@@ -58,6 +56,12 @@ function PronoForm({ onClose }) {
         </div>
 
         <form onSubmit={handleSubmit} className={styles.form}>
+          <div className={styles.field}>
+            <label>Ton pseudo (optionnel)</label>
+            <input value={form.author} onChange={e => set('author', e.target.value)}
+              placeholder="Anonyme" className={styles.input} />
+          </div>
+
           <div className={styles.matchRow}>
             <div className={styles.teamInput}>
               <label>Équipe domicile</label>
@@ -122,8 +126,6 @@ function PronoForm({ onClose }) {
 }
 
 export default function Pronos() {
-  const { user, loading: authLoading } = useAuth();
-  const navigate = useNavigate();
   const { data: pronostics, isLoading } = usePronostics();
   const [filter, setFilter] = useState('all');
   const [showForm, setShowForm] = useState(false);
@@ -140,8 +142,6 @@ export default function Pronos() {
 
   const rateColor = rate >= 60 ? 'var(--green-live)' : rate >= 40 ? 'var(--blue)' : 'var(--orange)';
 
-  if (authLoading) return <div className={styles.empty}>Chargement...</div>;
-
   return (
     <div className="container" style={{ padding: '1.5rem var(--gutter)' }}>
       {showForm && <PronoForm onClose={() => setShowForm(false)} />}
@@ -153,17 +153,9 @@ export default function Pronos() {
             Les pronostics de la communauté KickZone
           </p>
         </div>
-        {user ? (
-          <button className={styles.newPronoBtn} onClick={() => setShowForm(true)}>
-            + Nouveau prono
-          </button>
-        ) : (
-          <div className={styles.loginPrompt}>
-            <Link to="/connexion" state={{ from: '/pronos' }} className={styles.loginLink}>
-              Se connecter pour pronostiquer
-            </Link>
-          </div>
-        )}
+        <button className={styles.newPronoBtn} onClick={() => setShowForm(true)}>
+          + Nouveau prono
+        </button>
       </div>
 
       {total > 0 && (
@@ -202,11 +194,7 @@ export default function Pronos() {
 
       {isLoading && <div className={styles.empty}>Chargement...</div>}
       {!isLoading && filtered.length === 0 && (
-        <div className={styles.empty}>
-          {filter === 'all' && !user ? (
-            <>Aucun pronostic. <Link to="/inscription">Inscris-toi</Link> et sois le premier !</>
-          ) : 'Aucun pronostic dans cette catégorie.'}
-        </div>
+        <div className={styles.empty}>Aucun pronostic dans cette catégorie.</div>
       )}
       <div className={styles.grid}>
         {filtered.map(p => <PronoCard key={p.id} prono={p} />)}

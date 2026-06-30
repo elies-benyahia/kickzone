@@ -1,7 +1,10 @@
 const Parser = require('rss-parser');
 const parser = new Parser({
-  timeout: 8000,
-  headers: { 'User-Agent': 'Mozilla/5.0 (compatible; KickZone/1.0)' },
+  timeout: 5000,
+  headers: {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36',
+    'Accept': 'application/rss+xml, application/xml, text/xml, */*',
+  },
   customFields: { item: [['media:content', 'media:content'], ['media:thumbnail', 'media:thumbnail']] },
 });
 
@@ -82,8 +85,13 @@ const fetchAllArticles = async () => {
   const all = [];
   const results = await Promise.allSettled(
     FEEDS.map(async (feed) => {
-      const parsed = await parser.parseURL(feed.url);
-      return { feed, items: parsed.items || [] };
+      try {
+        const parsed = await parser.parseURL(feed.url);
+        return { feed, items: parsed.items || [] };
+      } catch (e) {
+        console.warn(`[RSS] ${feed.name}: ${e.message}`);
+        return { feed, items: [] };
+      }
     })
   );
 
@@ -91,11 +99,12 @@ const fetchAllArticles = async () => {
     if (res.status !== 'fulfilled') continue;
     const { feed, items } = res.value;
     items.slice(0, 10).forEach((item) => {
+      if (!item.title) return;
       all.push({
         id: item.guid || item.link || `${feed.name}-${item.title}`,
-        title: item.title || '',
+        title: item.title,
         link: item.link || item.guid || '',
-        summary: item.contentSnippet?.slice(0, 200) || '',
+        summary: item.contentSnippet?.slice(0, 200) || item.content?.replace(/<[^>]+>/g, '').slice(0, 200) || '',
         publishedAt: new Date(item.pubDate || item.isoDate || Date.now()),
         sourceName: feed.name,
         sourceLogo: feed.logo || '',
@@ -107,7 +116,8 @@ const fetchAllArticles = async () => {
   const sorted = all.sort((a, b) => b.publishedAt - a.publishedAt);
   _allCache = sorted;
   _allCacheTs = now;
-  console.log(`[RSS] Fetched ${sorted.length} total articles from ${FEEDS.length} feeds`);
+  const ok = results.filter(r => r.status === 'fulfilled' && r.value.items.length > 0).length;
+  console.log(`[RSS] ${ok}/${FEEDS.length} feeds OK → ${sorted.length} articles`);
   return sorted;
 };
 
