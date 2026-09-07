@@ -6,7 +6,7 @@ import TransferFlashTicker from './TransferFlashTicker';
 import styles from './Navbar.module.css';
 
 const COMPETITIONS = [
-  { name: 'Champions League', logo: 'https://media.api-sports.io/football/leagues/2.png', path: '/matches' },
+  { name: 'Champions League', logo: 'https://media.api-sports.io/football/leagues/2.png', path: '/ligue-des-champions' },
   { name: 'Europa League', logo: 'https://media.api-sports.io/football/leagues/3.png',    path: '/matches' },
   { name: 'Premier League', logo: 'https://media.api-sports.io/football/leagues/39.png',  path: '/matches' },
   { name: 'Ligue 1', logo: 'https://media.api-sports.io/football/leagues/61.png',         path: '/matches' },
@@ -264,6 +264,9 @@ export default function Navbar() {
             {megaOpen && <MegaMenu onClose={() => setMegaOpen(false)} />}
           </div>
 
+          <NavLink to="/ligue-des-champions" className={({ isActive }) => `${styles.link} ${isActive ? styles.active : ''}`} onClick={() => setMobileOpen(false)}>
+            Ligue des Champions
+          </NavLink>
           <NavLink to="/transferts" className={({ isActive }) => `${styles.link} ${isActive ? styles.active : ''}`} onClick={() => setMobileOpen(false)}>
             Transferts
           </NavLink>

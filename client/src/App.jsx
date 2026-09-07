@@ -16,6 +16,7 @@ const Transferts  = lazy(() => import('./pages/Transferts'));
 const Actu        = lazy(() => import('./pages/Actu'));
 const Article     = lazy(() => import('./pages/Article'));
 const Classements = lazy(() => import('./pages/Classements'));
+const LigueDesChampions = lazy(() => import('./pages/LigueDesChampions'));
 const Pronos      = lazy(() => import('./pages/Pronos'));
 const Admin       = lazy(() => import('./pages/Admin'));
 const AdminLogin  = lazy(() => import('./pages/AdminLogin'));
@@ -58,6 +59,7 @@ function AppLayout() {
           <Route path="/actu"           element={<Actu />} />
           <Route path="/article/:slug"  element={<Article />} />
           <Route path="/classements"    element={<Classements />} />
+          <Route path="/ligue-des-champions" element={<LigueDesChampions />} />
           <Route path="/pronos"         element={<Pronos />} />
           <Route path="/admin"          element={<Admin />} />
           <Route path="/admin/login"    element={<AdminLogin />} />

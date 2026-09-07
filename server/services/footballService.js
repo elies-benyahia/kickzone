@@ -3,6 +3,13 @@ const { getFromCache, setInCache, TTL } = require('./cacheService');
 
 const API_BASE = 'https://v3.football.api-sports.io';
 
+// Saison en cours au sens API-Football (année de début).
+// Ex. : en septembre 2026 -> saison 2026 (2026/2027).
+const currentSeason = () => {
+  const now = new Date();
+  return now.getMonth() >= 6 ? now.getFullYear() : now.getFullYear() - 1;
+};
+
 const getTTL = (endpoint) => {
   if (endpoint.includes('fixtures') && !endpoint.includes('lineups') && !endpoint.includes('statistics') && !endpoint.includes('headtohead') && !endpoint.includes('events')) {
     return TTL.FIXTURES;
@@ -54,7 +61,7 @@ module.exports = {
   getStats: (fixtureId) => apiCall('/fixtures/statistics', { fixture: fixtureId }),
   getEvents: (fixtureId) => apiCall('/fixtures/events', { fixture: fixtureId }),
   getH2H: (team1, team2) => apiCall('/fixtures/headtohead', { h2h: `${team1}-${team2}`, last: 10 }),
-  getStandings: (leagueId) => apiCall('/standings', { league: leagueId, season: 2024 }),
+  getStandings: (leagueId) => apiCall('/standings', { league: leagueId, season: currentSeason() }),
   getTransfers: (teamId) => apiCall('/transfers', { team: teamId }),
   getLatestTransfers: async () => {
     const teams = [85, 50, 541, 157, 496, 40, 529, 489];

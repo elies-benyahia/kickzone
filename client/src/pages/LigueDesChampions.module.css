@@ -1,0 +1,103 @@
+.head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.5rem;
+}
+.title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin: 0;
+  color: var(--text);
+}
+.season {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--blue-light);
+}
+.intro {
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: var(--text-muted);
+  max-width: 70ch;
+  margin: 0.5rem 0 1rem;
+}
+.demoNote {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 1rem;
+}
+.loading {
+  padding: 2rem 0;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.tableWrap {
+  overflow-x: auto;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 0.5rem;
+}
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+  min-width: 620px;
+}
+.table th {
+  padding: 8px;
+  text-align: center;
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 0.72rem;
+  border-bottom: 2px solid var(--border);
+  white-space: nowrap;
+}
+.table td {
+  padding: 8px;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+}
+.thRank { width: 34px; }
+.thTeam { text-align: left; min-width: 190px; }
+
+.rank { font-weight: 700; color: var(--text-muted); }
+.teamCell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-align: left;
+  font-weight: 600;
+  color: var(--text);
+}
+.pts { font-weight: 800; color: var(--blue-light); }
+.pos { color: var(--green-live); font-weight: 600; }
+.neg { color: #dc2626; font-weight: 600; }
+
+/* Zones de qualification */
+.top8    td:first-child { border-left: 4px solid var(--green-live); }
+.playoff td:first-child { border-left: 4px solid var(--orange); }
+.out     td:first-child { border-left: 4px solid #dc2626; }
+.top8    td { background: rgba(22, 163, 74, 0.06); }
+.playoff td { background: rgba(245, 158, 11, 0.05); }
+
+.legend {
+  display: flex;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  padding: 0.75rem 0.25rem 0.25rem;
+  font-size: 0.74rem;
+  color: var(--text-muted);
+}
+.legend span { display: inline-flex; align-items: center; gap: 5px; }
+.legend i { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+.dotTop8    { background: var(--green-live); }
+.dotPlayoff { background: var(--orange); }
+.dotOut     { background: #dc2626; }
