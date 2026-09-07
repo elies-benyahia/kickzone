@@ -1,3 +1,12 @@
+// ============================================================================
+//  Navbar — barre de navigation en haut du site (présente sur toutes les pages
+//  sauf l'espace admin). Contient 4 sous-composants :
+//   - DarkToggle : bouton thème clair / sombre
+//   - MegaMenu   : menu déroulant "Matchs" (liste de compétitions)
+//   - SearchBar  : recherche globale (équipes / joueurs / articles)
+//   - UserMenu   : menu du compte (visible seulement si connecté)
+// ============================================================================
+
 import { useState, useRef, useEffect } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useSearch } from '../hooks/api';
@@ -5,6 +14,7 @@ import { useAuth } from '../contexts/AuthContext';
 import TransferFlashTicker from './TransferFlashTicker';
 import styles from './Navbar.module.css';
 
+// Compétitions listées dans le méga-menu (logos servis par l'API-Football).
 const COMPETITIONS = [
   { name: 'Champions League', logo: 'https://media.api-sports.io/football/leagues/2.png', path: '/ligue-des-champions' },
   { name: 'Europa League', logo: 'https://media.api-sports.io/football/leagues/3.png',    path: '/matches' },
@@ -24,12 +34,15 @@ const CATEGORY_LABEL = {
   INTERVIEW: 'Interview', RESULTATS: 'Résultats',
 };
 
+// --- Bouton thème clair / sombre ---------------------------------------
 function DarkToggle() {
+  // On lit le choix mémorisé (localStorage) pour l'état initial.
   const [isLight, setIsLight] = useState(() => localStorage.getItem('kz_theme') === 'light');
 
   const toggle = () => {
     const next = !isLight;
     setIsLight(next);
+    // On ajoute/enlève l'attribut data-theme sur <html> : le CSS s'adapte.
     if (next) {
       document.documentElement.setAttribute('data-theme', 'light');
       localStorage.setItem('kz_theme', 'light');
@@ -46,8 +59,9 @@ function DarkToggle() {
   );
 }
 
+// --- Menu déroulant "Matchs" -----------------------------------------
 function MegaMenu({ onClose }) {
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // pour changer de page au clic
   return (
     <div className={styles.megaMenu}>
       <div className={styles.megaInner}>
@@ -77,24 +91,29 @@ function MegaMenu({ onClose }) {
   );
 }
 
+// --- Recherche globale (modale) ------------------------------------
 function SearchBar() {
-  const [q, setQ] = useState('');
-  const [open, setOpen] = useState(false);
-  const [debouncedQ, setDebouncedQ] = useState('');
+  const [q, setQ] = useState('');                  // texte tapé
+  const [open, setOpen] = useState(false);         // modale ouverte ?
+  const [debouncedQ, setDebouncedQ] = useState(''); // texte "retardé" (voir ci-dessous)
   const ref = useRef(null);
   const navigate = useNavigate();
 
+  // "Debounce" : on attend 350 ms après la dernière frappe avant de lancer la
+  // recherche, pour ne pas appeler l'API à chaque lettre.
   useEffect(() => {
     const t = setTimeout(() => setDebouncedQ(q), 350);
-    return () => clearTimeout(t);
+    return () => clearTimeout(t); // annule le timer si l'utilisateur retape avant 350 ms
   }, [q]);
 
+  // Ferme la modale si on clique en dehors.
   useEffect(() => {
     const handler = (e) => { if (!ref.current?.contains(e.target)) setOpen(false); };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
+  // Appel API (via React Query). Ne se déclenche qu'à partir de 2 caractères.
   const { data, isFetching } = useSearch(debouncedQ);
   const players  = data?.players  ?? [];
   const teams    = data?.teams    ?? [];
@@ -185,20 +204,23 @@ function SearchBar() {
   );
 }
 
+// --- Menu du compte utilisateur --------------------------------------
 function UserMenu() {
-  const { user, logout } = useAuth();
+  const { user, logout } = useAuth(); // user vient du contexte d'authentification
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
 
+  // Ferme le menu si on clique ailleurs.
   useEffect(() => {
     const h = e => { if (!ref.current?.contains(e.target)) setOpen(false); };
     document.addEventListener('mousedown', h);
     return () => document.removeEventListener('mousedown', h);
   }, []);
 
-  if (!user) return null;
+  if (!user) return null; // pas connecté -> on n'affiche rien
 
+  // Initiale affichée dans la pastille (pseudo ou première lettre de l'email).
   const initial = (user.username?.[0] ?? user.email[0]).toUpperCase();
   return (
     <div className={styles.userMenu} ref={ref}>
@@ -224,11 +246,13 @@ function UserMenu() {
   );
 }
 
+// --- Composant principal : assemble le tout -------------------------
 export default function Navbar() {
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [megaOpen, setMegaOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false); // menu "burger" ouvert (mobile) ?
+  const [megaOpen, setMegaOpen] = useState(false);     // méga-menu "Matchs" ouvert ?
   const megaRef = useRef(null);
 
+  // Ferme le méga-menu au clic extérieur.
   useEffect(() => {
     const h = (e) => { if (!megaRef.current?.contains(e.target)) setMegaOpen(false); };
     document.addEventListener('mousedown', h);
@@ -238,7 +262,7 @@ export default function Navbar() {
   return (
     <header className={styles.header}>
       <div className={styles.inner}>
-        {/* Logo */}
+        {/* Logo (si l'image ne charge pas, on affiche le texte "KZ") */}
         <Link to="/" className={styles.logo}>
           <img
             src="/images/logo.png"

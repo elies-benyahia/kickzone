@@ -1,24 +1,30 @@
+// ============================================================================
+//  TransferFlashTicker — bandeau "MERCATO" défilant en haut du site (dans la Navbar).
+//  Le texte défile en boucle grâce à une animation CSS ; ici on se contente
+//  d'afficher deux fois la liste pour que la boucle soit sans "trou".
+// ============================================================================
+
 import styles from './TransferFlashTicker.module.css';
 
+// Brèves affichées. tag "OFFICIEL" = transfert acté, tag "INFO" = rumeur.
 const FLASHES = [
-  { tag: 'OFFICIEL', text: 'GORDON rejoint le FC Barcelone pour 80M€' },
-  { tag: 'OFFICIEL', text: 'CUCURELLA signe au Real Madrid — 55M€, contrat 6 ans' },
-  { tag: 'OFFICIEL', text: 'BERNARDO SILVA rejoint le Real Madrid en tant que joueur libre' },
-  { tag: 'OFFICIEL', text: 'JACQUET rejoint Liverpool — 60M€ + 5M de bonus' },
-  { tag: 'OFFICIEL', text: 'QUENDA s\'engage avec Chelsea pour 52M€' },
-  { tag: 'OFFICIEL', text: 'VAN HECKE rejoint Tottenham pour 52M€' },
-  { tag: 'OFFICIEL', text: 'HINCAPIÉ permanent à Arsenal — 35M€' },
-  { tag: 'OFFICIEL', text: 'HOJLUND reste à Naples — Napoli lève l\'option d\'achat (43M€)' },
-  { tag: 'INFO', text: 'BARCOLA (PSG) ouvert à un départ — Liverpool et Chelsea sur les rangs' },
-  { tag: 'INFO', text: 'AKLIOUCHE (Monaco) a donné son accord de principe au PSG' },
-  { tag: 'INFO', text: 'DIOMANDÉ (Leipzig) très proche du PSG — accord quasi signé' },
-  { tag: 'INFO', text: 'KANG-IN LEE (PSG) vers l\'Atlético de Madrid pour 35M€' },
-  { tag: 'INFO', text: 'MORGAN ROGERS convoité par Chelsea et Arsenal — Villa réclame un record' },
-  { tag: 'INFO', text: 'BOUADDI (LOSC) dans le viseur du PSG pour renforcer le milieu' },
+  { tag: 'OFFICIEL', text: 'ENZO FERNÁNDEZ signe à Manchester City pour 145M€ (record de l\'été)' },
+  { tag: 'OFFICIEL', text: 'DIOMANDÉ rejoint le Real Madrid — 130M€ en provenance de Leipzig' },
+  { tag: 'OFFICIEL', text: 'BARCOLA (PSG) s\'engage à Liverpool — 125M€ + 20M€ de bonus' },
+  { tag: 'OFFICIEL', text: 'BRUNO GUIMARÃES quitte Newcastle pour Arsenal — 85M€' },
+  { tag: 'OFFICIEL', text: 'RODRI quitte Manchester City pour le FC Barcelone — 75M€' },
+  { tag: 'OFFICIEL', text: 'GORDON rejoint le FC Barcelone pour 70M€' },
+  { tag: 'OFFICIEL', text: 'GONÇALO RAMOS (PSG) file à l\'AC Milan — 70M€' },
+  { tag: 'OFFICIEL', text: 'FERRAN TORRES quitte le Barça pour le PSG — 48M€' },
+  { tag: 'OFFICIEL', text: 'GREENWOOD (Marseille) rejoint Fenerbahçe pour 39M€' },
+  { tag: 'OFFICIEL', text: 'GIROUD revient en Ligue 1, à Lille, libre' },
+  { tag: 'INFO', text: 'VINÍCIUS JR : offre XXL d\'Al-Hilal, le Real n\'a rien confirmé' },
+  { tag: 'INFO', text: 'HAALAND : la presse anglaise évoque un intérêt du Real Madrid' },
+  { tag: 'INFO', text: 'RAFAEL LEÃO (Milan) apprécié par le PSG pour cet hiver' },
 ];
 
 export default function TransferFlashTicker() {
-  const items = [...FLASHES, ...FLASHES];
+  const items = [...FLASHES, ...FLASHES]; // liste doublée -> défilement en boucle continue
 
   return (
     <div className={styles.bar}>
