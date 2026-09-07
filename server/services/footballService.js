@@ -3,8 +3,13 @@
 
 const axios = require('axios');
 const { getFromCache, setInCache } = require('./cacheService');
+const { fixturesForDate } = require('../data/uclJ1');
 
 const API_BASE = 'https://v3.football.api-sports.io';
+
+// Sans clé API : on renvoie les matchs de la 1re journée de C1 (8-10 sept.)
+// pour que les pages Matchs / Accueil ne soient pas vides.
+const noKey = () => !process.env.FOOTBALL_API_KEY && process.env.NODE_ENV !== 'test';
 
 // Saison en cours (année de début) : septembre 2026 -> 2026 (= 2026/2027).
 const season = () => {
@@ -38,8 +43,16 @@ const today = () => new Date().toISOString().split('T')[0];
 
 // 1 méthode = 1 endpoint de l'API-Football.
 module.exports = {
-  getFixturesToday:   () => call('/fixtures', { date: today(), timezone: 'Europe/Paris' }),
-  getFixturesByDate:  (date) => call('/fixtures', { date, timezone: 'Europe/Paris' }),
+  getFixturesToday: async () => {
+    if (noKey()) return fixturesForDate(today()).length ? fixturesForDate(today()) : fixturesForDate('2026-09-08');
+    const res = await call('/fixtures', { date: today(), timezone: 'Europe/Paris' });
+    return res.length ? res : fixturesForDate('2026-09-08');
+  },
+  getFixturesByDate: async (date) => {
+    if (noKey()) return fixturesForDate(date);
+    const res = await call('/fixtures', { date, timezone: 'Europe/Paris' });
+    return res.length ? res : fixturesForDate(date);
+  },
   getFixtureById:     (id) => call('/fixtures', { id }),
   getLineups:         (id) => call('/fixtures/lineups', { fixture: id }),
   getStats:           (id) => call('/fixtures/statistics', { fixture: id }),

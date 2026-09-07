@@ -174,6 +174,16 @@ export default function Home() {
       <LeftSidebar fixtures={fixtures} />
 
       <main className={styles.main}>
+        {/* Mise en avant : Ligue des Champions */}
+        <Link to="/ligue-des-champions" className={styles.uclBanner}>
+          <img src="/images/ucl-logo.jpg" alt="Ligue des Champions" className={styles.uclLogo} />
+          <div className={styles.uclText}>
+            <span className={styles.uclKicker}>Nouveau · Phase de ligue 2026/2027</span>
+            <span className={styles.uclTitle}>Ligue des Champions : classement des 36 & calendrier des 8 journées</span>
+          </div>
+          <span className={styles.uclCta}>Voir →</span>
+        </Link>
+
         {/* Top News Hero */}
         <section className={styles.section}>
           <div className={styles.sectionHead}>

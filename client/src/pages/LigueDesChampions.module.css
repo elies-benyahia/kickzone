@@ -1,9 +1,17 @@
 .head {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 0.75rem;
   flex-wrap: wrap;
   margin-bottom: 0.5rem;
+}
+.headLogo {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  background: #fff;
+  border-radius: 8px;
+  padding: 4px;
 }
 .title {
   font-size: 1.5rem;

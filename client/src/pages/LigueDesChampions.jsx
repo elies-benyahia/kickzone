@@ -42,7 +42,8 @@ export default function LigueDesChampions() {
   return (
     <div className="container" style={{ padding: '1.5rem var(--gutter)' }}>
       <header className={styles.head}>
-        <h1 className={styles.title}>🏆 Ligue des Champions</h1>
+        <img src="/images/ucl-logo.jpg" alt="" className={styles.headLogo} onError={e => e.target.style.display = 'none'} />
+        <h1 className={styles.title}>Ligue des Champions</h1>
         <span className={styles.season}>Phase de ligue — saison {SEASON}</span>
       </header>
 
