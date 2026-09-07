@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { useFixturesToday, useWorldCupFixtures, useArticles, useNewsLatest, usePronostics } from '../hooks/api';
+import { useFixturesToday, useArticles, useNewsLatest, usePronostics } from '../hooks/api';
 import MatchCard from '../components/MatchCard';
 import ArticleCard from '../components/ArticleCard';
 import PronoCard from '../components/PronoCard';
@@ -8,33 +8,8 @@ import styles from './Home.module.css';
 
 const LIVE_STATUSES = ['1H','2H','HT','ET','P','LIVE','INT'];
 
-function WorldCupSection() {
-  const { data: wcFixtures, isLoading } = useWorldCupFixtures();
-  if (isLoading) return null;
-  if (!wcFixtures || wcFixtures.length === 0) return null;
-
-  const liveMatches = wcFixtures.filter(f => LIVE_STATUSES.includes(f.fixture.status.short));
-
-  return (
-    <section className={styles.wcSection}>
-      <div className={styles.wcHeader}>
-        <img src="https://media.api-sports.io/football/leagues/1.png" alt="" width={20} height={20} onError={e=>e.target.style.display='none'} />
-        <span className={styles.wcTitle}>Coupe du Monde 2026</span>
-        {liveMatches.length > 0 && (
-          <span className={styles.wcLiveBadge}><span className="live-dot" /> {liveMatches.length} EN DIRECT</span>
-        )}
-        <Link to="/coupe-du-monde" className={styles.wcSeeAll}>Voir tout</Link>
-      </div>
-      <div className={styles.wcGrid}>
-        {wcFixtures.slice(0, 4).map(f => <MatchCard key={f.fixture.id} fixture={f} />)}
-      </div>
-    </section>
-  );
-}
-
 /* Ligues autorisées uniquement */
 const ALLOWED_LEAGUES = new Set([
-  1,   // FIFA World Cup
   2,   // UEFA Champions League
   3,   // UEFA Europa League
   848, // UEFA Conference League
@@ -69,14 +44,8 @@ function LeftSidebar({ fixtures }) {
 
   const important = fixtures.filter(f => ALLOWED_LEAGUES.has(f.league.id));
 
-  const sorted = [...important].sort((a, b) => {
-    if (a.league.id === 1) return -1;
-    if (b.league.id === 1) return 1;
-    return 0;
-  });
-
   const grouped = {};
-  sorted.forEach(f => {
+  important.forEach(f => {
     const name = f.league.name;
     if (!grouped[name]) grouped[name] = [];
     grouped[name].push(f);
@@ -188,7 +157,7 @@ function TopNewsHero({ articles }) {
 }
 
 const FALLBACK_ARTICLES = [
-  { id: 'f1', title: 'Coupe du Monde 2026 : le tournoi bat des records d\'audience à travers le monde', link: 'https://www.lequipe.fr', sourceName: "L'Équipe", imageUrl: null, publishedAt: new Date() },
+  { id: 'f1', title: 'Ligue des Champions : soirée européenne pleine de promesses pour les clubs français', link: 'https://www.lequipe.fr', sourceName: "L'Équipe", imageUrl: null, publishedAt: new Date() },
   { id: 'f2', title: 'Mercato : les plus grands transferts de l\'été 2026 décryptés', link: 'https://www.footmercato.net', sourceName: 'Foot Mercato', imageUrl: null, publishedAt: new Date() },
   { id: 'f3', title: 'Équipe de France : les convoqués pour le Mondial et les enjeux tactiques', link: 'https://rmcsport.bfmtv.com', sourceName: 'RMC Sport', imageUrl: null, publishedAt: new Date() },
   { id: 'f4', title: 'Champions League : le tirage au sort de la saison 2026-27 dévoilé', link: 'https://www.eurosport.fr', sourceName: 'Eurosport', imageUrl: null, publishedAt: new Date() },
@@ -213,9 +182,6 @@ export default function Home() {
       <LeftSidebar fixtures={fixtures} />
 
       <main className={styles.main}>
-        {/* Coupe du Monde */}
-        <WorldCupSection />
-
         {/* Top News Hero */}
         <section className={styles.section}>
           <div className={styles.sectionHead}>

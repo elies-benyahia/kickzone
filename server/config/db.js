@@ -14,8 +14,13 @@ const path = require('path');
 const fs = require('fs');
 const { DatabaseSync } = require('node:sqlite');
 
-const DB_FILE =
-  process.env.DB_FILE || path.join(__dirname, '..', 'database', 'kickzone.db');
+// DB_FILE peut être relatif : on le résout par rapport au dossier server/,
+// pas au répertoire courant, pour un comportement identique quel que soit
+// l'endroit d'où node est lancé.
+const SERVER_DIR = path.join(__dirname, '..');
+const DB_FILE = process.env.DB_FILE
+  ? path.resolve(SERVER_DIR, process.env.DB_FILE)
+  : path.join(SERVER_DIR, 'database', 'kickzone.db');
 
 fs.mkdirSync(path.dirname(DB_FILE), { recursive: true });
 

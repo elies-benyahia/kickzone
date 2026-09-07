@@ -6,7 +6,6 @@ import TransferFlashTicker from './TransferFlashTicker';
 import styles from './Navbar.module.css';
 
 const COMPETITIONS = [
-  { name: 'Coupe du Monde', logo: 'https://media.api-sports.io/football/leagues/1.png',   path: '/coupe-du-monde' },
   { name: 'Champions League', logo: 'https://media.api-sports.io/football/leagues/2.png', path: '/matches' },
   { name: 'Europa League', logo: 'https://media.api-sports.io/football/leagues/3.png',    path: '/matches' },
   { name: 'Premier League', logo: 'https://media.api-sports.io/football/leagues/39.png',  path: '/matches' },
@@ -68,9 +67,6 @@ function MegaMenu({ onClose }) {
           <div className={styles.megaLabel}>Explorer</div>
           <button className={styles.megaAsideItem} onClick={() => { navigate('/matches'); onClose(); }}>
             Tous les matchs
-          </button>
-          <button className={styles.megaAsideItem} onClick={() => { navigate('/coupe-du-monde'); onClose(); }}>
-            Coupe du Monde 2026
           </button>
           <button className={styles.megaAsideItem} onClick={() => { navigate('/classements'); onClose(); }}>
             Classements
@@ -268,9 +264,6 @@ export default function Navbar() {
             {megaOpen && <MegaMenu onClose={() => setMegaOpen(false)} />}
           </div>
 
-          <NavLink to="/coupe-du-monde" className={({ isActive }) => `${styles.link} ${isActive ? styles.active : ''}`} onClick={() => setMobileOpen(false)}>
-            Coupe du Monde
-          </NavLink>
           <NavLink to="/transferts" className={({ isActive }) => `${styles.link} ${isActive ? styles.active : ''}`} onClick={() => setMobileOpen(false)}>
             Transferts
           </NavLink>

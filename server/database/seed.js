@@ -28,27 +28,30 @@ async function createAdmin() {
   return admin.id;
 }
 
-// ─── 2. Vrais matchs API Football ─────────────────────────────────────────────
-// Matchs de démonstration (utilisés si l'API Football n'est pas disponible)
-// pour que la page Pronostics ne soit jamais vide devant le jury.
+// ─── 2. Matchs à venir ───────────────────────────────────────────────────────
+// Ligues suivies pour les pronostics
+const IMPORTANT_LEAGUES = new Set([2, 3, 39, 61, 78, 135, 140]); // UCL, UEL, PL, L1, Bundesliga, Serie A, Liga
+
+// Matchs de démonstration : utilisés si l'API Football n'est pas configurée,
+// pour que la page Pronostics ne soit jamais vide.
 function demoFixtures() {
-  const mk = (id, hId, h, aId, a, league, daysFromNow) => {
+  const mk = (id, h, a, league, daysFromNow) => {
     const d = new Date();
     d.setDate(d.getDate() + daysFromNow);
     d.setHours(21, 0, 0, 0);
     return {
       fixture: { id, date: d.toISOString() },
       league: { name: league },
-      teams: { home: { id: hId, name: h }, away: { id: aId, name: a } },
+      teams: { home: { id, name: h }, away: { id: id + 1, name: a } },
     };
   };
   return [
-    mk(9001, 85, 'France', 138, 'Portugal', 'Coupe du Monde 2026', 2),
-    mk(9002, 131, 'Brésil', 9, 'Espagne', 'Coupe du Monde 2026', 3),
-    mk(9003, 10, 'Angleterre', 26, 'Argentine', 'Coupe du Monde 2026', 3),
-    mk(9004, 25, 'Allemagne', 21, 'Pays-Bas', 'Coupe du Monde 2026', 4),
-    mk(9005, 85, 'Paris Saint-Germain', 50, 'Manchester City', 'Ligue des Champions', 6),
-    mk(9006, 541, 'Real Madrid', 529, 'Barcelone', 'La Liga', 7),
+    mk(9001, 'Paris Saint-Germain', 'Manchester City', 'Ligue des Champions', 2),
+    mk(9003, 'Real Madrid', 'Bayern Munich', 'Ligue des Champions', 3),
+    mk(9005, 'Liverpool', 'Arsenal', 'Premier League', 4),
+    mk(9007, 'Marseille', 'Monaco', 'Ligue 1', 5),
+    mk(9009, 'Barcelone', 'Atlético Madrid', 'La Liga', 6),
+    mk(9011, 'Inter Milan', 'Juventus', 'Serie A', 7),
   ];
 }
 
@@ -59,24 +62,9 @@ async function getUpcomingFixtures() {
     return demoFixtures();
   }
 
-  const IMPORTANT_LEAGUES = new Set([1, 2, 3, 39, 61, 140, 78, 135]);
-
-  try {
-    // Priorité : Coupe du Monde 2026
-    const { data: wc } = await axios.get('https://v3.football.api-sports.io/fixtures', {
-      params: { league: 1, season: 2026, next: 10 },
-      headers: { 'x-apisports-key': API_KEY },
-      timeout: 12000,
-    });
-    if (wc.response?.length >= 4) {
-      console.log(`[SEED] ✅ ${wc.response.length} matchs CdM trouvés`);
-      return wc.response.slice(0, 8);
-    }
-  } catch (e) { console.log('[SEED] API WC indisponible :', e.message); }
-
-  // Fallback : prochains jours, ligues majeures
+  // Prochains jours, ligues majeures uniquement
   const fixtures = [];
-  for (let i = 0; i <= 4 && fixtures.length < 8; i++) {
+  for (let i = 0; i <= 6 && fixtures.length < 8; i++) {
     const d = new Date(); d.setDate(d.getDate() + i);
     const date = d.toISOString().split('T')[0];
     try {

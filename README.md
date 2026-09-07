@@ -17,7 +17,7 @@ Projet réalisé dans le cadre du titre professionnel **DWWM (Développeur Web e
 | Données football | API-Football (api-sports.io) avec cache mémoire 5 min |
 | Actualités | Flux RSS agrégés (L'Équipe, Foot Mercato, RMC…) via rss-parser |
 | Sécurité | Helmet.js, CORS restrictif, express-validator, rate-limiting, requêtes SQL paramétrées |
-| DevOps | Docker, docker-compose, nginx reverse proxy — déploiement Render + Vercel |
+| Déploiement | Un seul serveur Node : l'API Express sert aussi le build React. Hébergement Render (1 service) |
 | Tests | Jest, Supertest (4 suites, 15 tests) |
 
 ---
@@ -38,10 +38,9 @@ Projet réalisé dans le cadre du titre professionnel **DWWM (Développeur Web e
 │   ├── routes/                # articles, football, pronostics, auth
 │   ├── middlewares/           # auth (JWT), validate (express-validator), rateLimit
 │   ├── config/db.js           # adaptateur SQLite (API compatible mysql2)
-│   └── database/              # schema.sql (référence), init.js, seed.js, kickzone.db
-├── nginx/                     # nginx.conf (reverse proxy HTTPS)
-├── docker-compose.yml
-├── render.yaml                # déploiement API sur Render
+│   ├── database/              # schema.sql (référence), init.js, seed.js, kickzone.db
+│   └── index.js               # API + sert client/dist en production
+├── render.yaml                # déploiement (1 seul service Node)
 ├── DEPLOIEMENT.md
 └── .env.example
 ```
@@ -189,7 +188,7 @@ npm test --workspace=server
 | Back-end MVC | routes / controllers / services strict |
 | BDD relationnelle | SQLite, 3 tables, clé étrangère `pronostics.user_id → users.id` (ON DELETE CASCADE), SQL paramétré |
 | Composants métier | Proxy API-Football avec cache mémoire, agrégateur RSS, CRUD admin, JWT |
-| Déploiement documenté | DEPLOIEMENT.md, docker-compose, nginx, render.yaml (Render + Vercel) |
+| Déploiement documenté | DEPLOIEMENT.md, render.yaml (Render, 1 service : Node sert l'API + le front) |
 | Tests | Jest unitaires + Supertest API (15 tests) |
 | SEO | Balises sémantiques, meta description |
 | Accessibilité | ARIA labels, navigation clavier, alt images |

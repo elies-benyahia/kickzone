@@ -4,10 +4,9 @@ import { useFixturesByDate } from '../hooks/api';
 import MatchCard from '../components/MatchCard';
 import styles from './Matches.module.css';
 
-const PRIORITY_LEAGUES = new Set([1, 2, 3, 39, 61, 78, 135, 140]);
+const PRIORITY_LEAGUES = new Set([2, 3, 39, 61, 78, 135, 140]);
 const LEAGUES = [
   { id: null,  label: 'Toutes' },
-  { id: 1,     label: 'Coupe du Monde' },
   { id: 2,     label: 'Champions League' },
   { id: 3,     label: 'Europa League' },
   { id: 39,    label: 'Premier League' },
@@ -36,10 +35,7 @@ export default function Matches() {
     .sort((a, b) => {
       const pa = PRIORITY_LEAGUES.has(a.league.id) ? 0 : 1;
       const pb = PRIORITY_LEAGUES.has(b.league.id) ? 0 : 1;
-      if (pa !== pb) return pa - pb;
-      if (a.league.id === 1) return -1;
-      if (b.league.id === 1) return 1;
-      return 0;
+      return pa - pb;
     });
 
   const grouped = {};
@@ -49,12 +45,12 @@ export default function Matches() {
     grouped[key].matches.push(f);
   });
 
-  // Période complète Coupe du Monde 2026 + quelques jours de marge
-  const WC_START = new Date(2026, 5, 11); // 11 Juin
-  const WC_END   = new Date(2026, 6, 22); // 22 Juillet
+  // Fenêtre glissante : 10 jours avant / 10 jours après aujourd'hui
   const days = [];
-  for (let d = new Date(WC_START); d <= WC_END; d.setDate(d.getDate() + 1)) {
-    days.push(new Date(d));
+  for (let i = -10; i <= 10; i++) {
+    const d = new Date();
+    d.setDate(d.getDate() + i);
+    days.push(d);
   }
 
   return (

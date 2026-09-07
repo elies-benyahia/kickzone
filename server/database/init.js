@@ -6,8 +6,10 @@ require('dotenv').config({ path: require('path').join(__dirname, '../.env') });
 const fs = require('fs');
 const path = require('path');
 
-const DB_FILE =
-  process.env.DB_FILE || path.join(__dirname, 'kickzone.db');
+const SERVER_DIR = path.join(__dirname, '..');
+const DB_FILE = process.env.DB_FILE
+  ? path.resolve(SERVER_DIR, process.env.DB_FILE)
+  : path.join(SERVER_DIR, 'database', 'kickzone.db');
 
 for (const suffix of ['', '-wal', '-shm']) {
   const f = DB_FILE + suffix;

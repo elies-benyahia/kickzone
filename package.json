@@ -1,12 +1,17 @@
 {
-  "name": "warzone-cdl-esport",
+  "name": "kickzone",
   "version": "1.0.0",
   "private": true,
   "workspaces": ["client", "server"],
   "scripts": {
     "dev": "concurrently \"npm run dev --workspace=server\" \"npm run dev --workspace=client\"",
     "build": "npm run build --workspace=client",
+    "start": "npm start --workspace=server",
+    "db:reset": "npm run db:reset --workspace=server",
     "test": "npm run test --workspace=server"
+  },
+  "engines": {
+    "node": ">=22.5.0"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"

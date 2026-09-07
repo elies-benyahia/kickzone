@@ -26,8 +26,6 @@ const NotFound    = lazy(() => import('./pages/NotFound'));
 const Login        = lazy(() => import('./pages/Login'));
 const Register     = lazy(() => import('./pages/Register'));
 const Profile      = lazy(() => import('./pages/Profile'));
-const CoupeDuMonde  = lazy(() => import('./pages/CoupeDuMonde'));
-const Competition   = lazy(() => import('./pages/Competition'));
 
 const Loader = () => (
   <div style={{minHeight:'40vh',display:'flex',alignItems:'center',justifyContent:'center',color:'var(--text-muted)',fontWeight:600}}>
@@ -69,8 +67,6 @@ function AppLayout() {
           <Route path="/connexion"        element={<Login />} />
           <Route path="/inscription"      element={<Register />} />
           <Route path="/profil"           element={<Profile />} />
-          <Route path="/coupe-du-monde"    element={<CoupeDuMonde />} />
-          <Route path="/competition/:id"  element={<Competition />} />
           <Route path="*"               element={<NotFound />} />
         </Routes>
       </Suspense>

@@ -5,9 +5,9 @@ client/dist/
 client/.env
 server/.env
 server/generated/
-server/database/*.db
-server/database/*.db-shm
-server/database/*.db-wal
+*.db
+*.db-shm
+*.db-wal
 nginx/ssl/
 *.log
 .DS_Store

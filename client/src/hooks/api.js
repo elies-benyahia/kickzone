@@ -100,14 +100,6 @@ export const useLatestTransfers = () =>
     staleTime: 2 * 60 * 60 * 1000,
   });
 
-export const useWorldCupFixtures = () =>
-  useQuery({
-    queryKey: ['worldcup-fixtures'],
-    queryFn: () => api.get('/football/fixtures/worldcup').then(r => r.data),
-    staleTime: 60 * 1000,
-    refetchInterval: 60 * 1000,
-  });
-
 export const useTeam = (id) =>
   useQuery({
     queryKey: ['team', id],

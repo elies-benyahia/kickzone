@@ -12,38 +12,6 @@ const apiHeaders = () => ({ 'x-apisports-key': process.env.FOOTBALL_API_KEY });
 router.get('/fixtures/today',        c.today);
 router.get('/fixtures/date/:date',   c.byDate);
 
-// Coupe du Monde 2026 — DOIT être avant /fixtures/:id
-router.get('/fixtures/worldcup', async (req, res, next) => {
-  try {
-    const today = new Date().toISOString().split('T')[0];
-    const cacheKey = `wc:${today}`;
-    const cached = getFromCache(cacheKey);
-    if (cached) return res.json(cached);
-
-    if (!process.env.FOOTBALL_API_KEY) return res.json([]);
-
-    console.log(`[API-FOOTBALL] GET /fixtures/worldcup date=${today}`);
-    const { data } = await axios.get(`${API_BASE}/fixtures`, {
-      headers: apiHeaders(),
-      params: { league: 1, season: 2026, date: today },
-      timeout: 10000,
-    });
-    let result = data.response ?? [];
-
-    if (result.length === 0) {
-      const { data: next } = await axios.get(`${API_BASE}/fixtures`, {
-        headers: apiHeaders(),
-        params: { league: 1, season: 2026, next: 8 },
-        timeout: 10000,
-      });
-      result = next.response ?? [];
-    }
-
-    setInCache(cacheKey, result, 60);
-    res.json(result);
-  } catch (e) { next(e); }
-});
-
 router.get('/fixtures/:id/lineups',  c.lineups);
 router.get('/fixtures/:id/stats',    c.stats);
 router.get('/fixtures/:id/events',   c.events);

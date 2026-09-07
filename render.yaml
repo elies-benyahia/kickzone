@@ -1,20 +1,17 @@
-# Déploiement de l'API KickZone sur Render (https://render.com)
-# Dans Render : New + > Blueprint > sélectionne ce dépôt. Render lit ce fichier.
+# Déploiement de KickZone sur Render (https://render.com) — UN SEUL service.
+# Le serveur Node sert à la fois l'API et le build React (client/dist).
 #
-# Après création, va dans le service > Environment et renseigne :
-#   FOOTBALL_API_KEY  = ta clé api-sports.io
-#   ALLOWED_ORIGINS   = l'URL de ton front Vercel (ex: https://kickzone.vercel.app)
+# Sur Render : New + > Blueprint > sélectionne ce dépôt. Render lit ce fichier.
+# Puis dans le service > Environment, renseigne FOOTBALL_API_KEY.
 
 services:
   - type: web
-    name: kickzone-api
+    name: kickzone
     runtime: node
     plan: free
-    rootDir: server
-    buildCommand: npm install
+    buildCommand: npm install && npm run build
     startCommand: npm start
     healthCheckPath: /api/health
-    autoDeploy: true
     envVars:
       - key: NODE_ENV
         value: production
@@ -28,13 +25,5 @@ services:
         value: Admin2026!
       - key: FOOTBALL_API_KEY
         sync: false
-      - key: ALLOWED_ORIGINS
-        sync: false
-    # Plan "free" = pas de disque persistant : la base SQLite est recréée et
-    # re-remplie automatiquement à chaque redémarrage (seedIfEmpty au boot).
-    # Pour une base persistante, passe le service en plan payant et décommente :
-    # disk:
-    #   name: kickzone-data
-    #   mountPath: /var/data
-    #   sizeGB: 1
-    # et ajoute la variable DB_FILE = /var/data/kickzone.db
+    # Plan gratuit = pas de disque persistant : la base SQLite est recréée et
+    # re-remplie automatiquement à chaque redémarrage (seed auto au boot).
