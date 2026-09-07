@@ -1,7 +1,12 @@
+// ============================================================================
+//  routes/news.js — actualités football agrégées depuis des flux RSS
+//  (L'Équipe, Foot Mercato, RMC...). Voir services/rssService.js.
+// ============================================================================
+
 const router = require('express').Router();
 const { fetchAllArticles } = require('../services/rssService');
 
-// Dernières actus agrégées depuis les flux RSS.
+// GET /api/news/latest?limit=30 -> les dernières actus, triées par date.
 router.get('/latest', async (req, res, next) => {
   try {
     const limit = parseInt(req.query.limit) || 30;

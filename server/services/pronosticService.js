@@ -1,6 +1,13 @@
+// ============================================================================
+//  services/pronosticService.js — logique métier + SQL des pronostics
+// ============================================================================
+
 const pool = require('../config/db');
 
+// Liste des pronostics, avec l'email/pseudo de l'auteur (jointure sur users).
+// Si userId est fourni, on ne renvoie que les pronostics de cet utilisateur.
 const getPronostics = async (userId = null) => {
+  // "AS xxx" renomme les colonnes SQL (snake_case) en camelCase pour le front.
   const base = `SELECT p.id, p.fixture_id AS fixtureId,
             p.home_team AS homeTeam, p.away_team AS awayTeam,
             p.home_team_id AS homeTeamId, p.away_team_id AS awayTeamId,
@@ -10,16 +17,18 @@ const getPronostics = async (userId = null) => {
             p.user_id AS userId, p.created_at AS createdAt,
             u.email AS userEmail, u.username AS username
      FROM pronostics p
-     JOIN users u ON p.user_id = u.id`;
+     JOIN users u ON p.user_id = u.id`;         // jointure : associe chaque prono à son auteur
+
   const [rows] = userId
     ? await pool.execute(`${base} WHERE p.user_id = ? ORDER BY p.match_date DESC`, [Number(userId)])
     : await pool.execute(`${base} ORDER BY p.match_date DESC`);
   return rows;
 };
 
+// Création d'un pronostic. On convertit / sécurise chaque valeur avant l'INSERT.
 const createPronostic = async ({
   fixtureId, homeTeam, awayTeam, homeTeamId, awayTeamId,
-  prediction, scoreHome, scoreAway, confidence, league, matchDate, userId
+  prediction, scoreHome, scoreAway, confidence, league, matchDate, userId,
 }) => {
   const [result] = await pool.execute(
     `INSERT INTO pronostics
@@ -27,23 +36,24 @@ const createPronostic = async ({
         prediction, score_home, score_away, confidence, league, match_date, user_id)
      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
-      fixtureId   ? Number(fixtureId)   : null,
+      fixtureId  ? Number(fixtureId)  : null,
       homeTeam,
       awayTeam,
-      homeTeamId  ? Number(homeTeamId)  : null,
-      awayTeamId  ? Number(awayTeamId)  : null,
+      homeTeamId ? Number(homeTeamId) : null,
+      awayTeamId ? Number(awayTeamId) : null,
       prediction,
-      scoreHome !== undefined && scoreHome !== null ? Number(scoreHome) : null,
-      scoreAway !== undefined && scoreAway !== null ? Number(scoreAway) : null,
-      Number(confidence) || 50,
+      scoreHome != null ? Number(scoreHome) : null,
+      scoreAway != null ? Number(scoreAway) : null,
+      Number(confidence) || 50,          // 50 % par défaut
       league ?? null,
       new Date(matchDate),
-      Number(userId),
+      Number(userId),                    // auteur (ajouté par le contrôleur)
     ]
   );
   return { id: result.insertId, fixtureId, homeTeam, awayTeam, prediction, scoreHome, scoreAway, confidence, league, matchDate };
 };
 
+// Mise à jour (typiquement : passer le résultat à CORRECT ou RATE après le match).
 const updatePronostic = async (id, { prediction, confidence, result }) => {
   await pool.execute(
     'UPDATE pronostics SET prediction=?, confidence=?, result=? WHERE id=?',
@@ -57,6 +67,8 @@ const deletePronostic = async (id) => {
   return { success: true };
 };
 
+// Statistiques globales : total, corrects, ratés, en attente, taux de réussite.
+// Astuce SQL : `result = 'CORRECT'` vaut 1 ou 0, donc SUM(...) compte les lignes.
 const getStats = async () => {
   const [[stats]] = await pool.execute(
     `SELECT
@@ -66,7 +78,7 @@ const getStats = async () => {
        SUM(result = 'EN_ATTENTE') AS en_attente,
        ROUND(
          SUM(result = 'CORRECT')
-         / NULLIF(SUM(result != 'EN_ATTENTE'), 0)
+         / NULLIF(SUM(result != 'EN_ATTENTE'), 0)   -- évite la division par zéro
          * 100, 1
        ) AS taux_reussite
      FROM pronostics`
