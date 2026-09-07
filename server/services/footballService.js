@@ -21,16 +21,26 @@ const apiCall = async (endpoint, params = {}) => {
   const cached = getFromCache(cacheKey);
   if (cached !== null) return cached;
 
-  console.log(`[API-FOOTBALL] ${new Date().toISOString()} GET ${endpoint}`, params);
-  const { data } = await axios.get(`${API_BASE}${endpoint}`, {
-    headers: { 'x-apisports-key': process.env.FOOTBALL_API_KEY },
-    params,
-    timeout: 10000,
-  });
+  // Pas de clé API configurée : on renvoie un résultat vide plutôt que planter.
+  if (!process.env.FOOTBALL_API_KEY && process.env.NODE_ENV !== 'test') {
+    console.warn(`[API-FOOTBALL] FOOTBALL_API_KEY manquant — ${endpoint} renvoie []`);
+    return [];
+  }
 
-  const result = data.response;
-  setInCache(cacheKey, result, ttl);
-  return result;
+  console.log(`[API-FOOTBALL] ${new Date().toISOString()} GET ${endpoint}`, params);
+  try {
+    const { data } = await axios.get(`${API_BASE}${endpoint}`, {
+      headers: { 'x-apisports-key': process.env.FOOTBALL_API_KEY },
+      params,
+      timeout: 10000,
+    });
+    const result = data.response ?? [];
+    setInCache(cacheKey, result, ttl);
+    return result;
+  } catch (e) {
+    console.error(`[API-FOOTBALL] Erreur ${endpoint} : ${e.message}`);
+    return [];
+  }
 };
 
 module.exports = {

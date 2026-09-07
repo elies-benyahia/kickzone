@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config({ path: require('path').join(__dirname, '.env') });
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -34,6 +34,14 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => console.log(`KickZone API listening on port ${PORT}`));
+app.listen(PORT, async () => {
+  console.log(`KickZone API listening on port ${PORT}`);
+  if (process.env.NODE_ENV === 'test') return;
+  try {
+    await require('./database/seed').seedIfEmpty();
+  } catch (e) {
+    console.error('[BOOT] seed auto échoué :', e.message);
+  }
+});
 
 module.exports = app;

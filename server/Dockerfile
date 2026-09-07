@@ -1,20 +1,16 @@
-FROM node:20-alpine AS base
+FROM node:24-alpine AS base
 
 WORKDIR /app
 
-# Dépendances
+# Dépendances (production uniquement)
 COPY package.json ./
 RUN npm install --omit=dev
-
-# Prisma generate
-COPY prisma ./prisma/
-RUN npx prisma generate
 
 # Code source
 COPY . .
 
-# Port exposé
 EXPOSE 3001
 
-# Script de démarrage : migrations + seed + serveur
-CMD ["sh", "-c", "npx prisma migrate deploy && node prisma/seed.js && node index.js"]
+# La base SQLite est créée et remplie automatiquement au démarrage
+# (seedIfEmpty dans index.js) si elle est vide.
+CMD ["node", "index.js"]

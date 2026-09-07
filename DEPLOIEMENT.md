@@ -3,252 +3,143 @@
 ## Architecture
 
 ```
-projet/
-├── client/          # React 19 + Vite (port 5173 dev / dist/ en prod)
-├── server/          # Node.js + Express + Prisma (port 3001)
-└── server/prisma/   # Schéma MySQL + migrations
+KickZone/
+├── client/     # React 19 + Vite  → build statique dans client/dist/
+├── server/     # Node.js + Express 5 (port 3001), API REST
+│   ├── config/db.js      # adaptateur SQLite (module natif node:sqlite)
+│   └── database/         # schema.sql (référence), init.js, seed.js
+├── render.yaml           # blueprint de déploiement de l'API sur Render
+└── docker-compose.yml    # app + nginx (base SQLite dans un volume)
 ```
 
-## Prérequis
+La base de données est un **simple fichier SQLite** (`server/database/kickzone.db`).
+Aucun serveur MySQL/PostgreSQL à installer. Elle est **créée et remplie
+automatiquement** au premier démarrage si elle est vide (`seedIfEmpty`).
 
-| Outil | Version minimale |
-|-------|-----------------|
-| Node.js | 20.x LTS |
-| npm | 10.x |
-| MySQL | 8.0+ |
+---
+
+## Pré-requis
+
+| Outil | Version |
+|-------|---------|
+| Node.js | **22.5+ ou 24** (requis pour `node:sqlite`) |
+| npm | 10+ |
 | Git | 2.x |
+| Docker | *(optionnel)* pour le déploiement conteneurisé |
 
 ---
 
-## Installation locale (développement)
-
-### 1. Cloner le dépôt
+## 1. Installation locale (développement)
 
 ```bash
-git clone <url-du-repo>
-cd "projet esport call of warzone bo7 cdl"
+git clone https://github.com/Elies-Benyahia/KickZone.git
+cd KickZone
+
+npm install                          # dépendances client + server (workspaces)
+
+cp server/.env.example server/.env   # puis renseigner FOOTBALL_API_KEY
+npm run db:reset --workspace=server  # crée + remplit la base SQLite
+
+npm run dev                          # API :3001 + front :5173
 ```
 
-### 2. Configurer les variables d'environnement
+Compte admin par défaut : `admin@kickzone.fr` / `Admin2026!`
 
-```bash
-cp server/.env.example server/.env
-# Ouvrir server/.env et renseigner les valeurs
-```
+### Variables d'environnement (`server/.env`)
 
-Variables obligatoires :
+| Variable | Obligatoire | Description | Valeur par défaut |
+|----------|:-----------:|-------------|-------------------|
+| `PORT` | non | Port de l'API | `3001` |
+| `NODE_ENV` | non | `development` / `production` | `development` |
+| `ALLOWED_ORIGINS` | non | Origines CORS autorisées (séparées par `,`) | `http://localhost:5173` |
+| `DB_FILE` | non | Chemin du fichier SQLite | `./database/kickzone.db` |
+| `JWT_SECRET` | **oui** | Clé de signature JWT (≥ 32 caractères) | *(fournie dans .env)* |
+| `JWT_EXPIRES_IN` | non | Durée de validité du token | `7d` |
+| `ADMIN_EMAIL` | non | Email du compte admin (seed) | `admin@kickzone.fr` |
+| `ADMIN_PASSWORD` | non | Mot de passe admin (seed) | `Admin2026!` |
+| `FOOTBALL_API_KEY` | recommandé | Clé [api-sports.io](https://dashboard.api-football.com) (100 req/jour en gratuit) | *(vide)* |
 
-| Variable | Description | Exemple |
-|----------|-------------|---------|
-| `DATABASE_URL` | Chaîne de connexion MySQL | `mysql://root:@localhost:3306/warzone_cdl` |
-| `JWT_SECRET` | Clé secrète JWT (min. 32 chars) | `mon_secret_tres_long_et_aleatoire` |
-| `JWT_EXPIRES_IN` | Durée de validité du token | `7d` |
-| `PORT` | Port du serveur Express | `3001` |
-| `ALLOWED_ORIGINS` | Origines CORS autorisées | `http://localhost:5173` |
-| `ADMIN_EMAIL` | Email du compte admin initial | `admin@cod-pulse.fr` |
-| `ADMIN_PASSWORD` | Mot de passe admin initial | `MotDePasse123!` |
-
-Variables optionnelles :
-
-| Variable | Description |
-|----------|-------------|
-| `TWITCH_CLIENT_ID` | API Twitch (page Live) |
-| `TWITCH_CLIENT_SECRET` | API Twitch |
-| `TRN_API_KEY` | Tracker.gg (Top 250) |
-
-### 3. Installer les dépendances
-
-```bash
-# Serveur
-cd server && npm install
-
-# Client
-cd ../client && npm install
-```
-
-### 4. Initialiser la base de données
-
-```bash
-cd server
-
-# Générer le client Prisma
-npx prisma generate
-
-# Créer les tables (sans migration)
-npx prisma db push
-
-# Injecter les données de seed (compte admin + données initiales)
-npx prisma db seed
-```
-
-> La commande `db seed` crée automatiquement le compte admin avec les identifiants définis dans `ADMIN_EMAIL` et `ADMIN_PASSWORD`.
-
-### 5. Lancer les serveurs
-
-```bash
-# Terminal 1 — API
-cd server && npm run dev      # nodemon, hot reload
-
-# Terminal 2 — Front
-cd client && npm run dev      # Vite, HMR
-```
-
-- Front-end : [http://localhost:5173](http://localhost:5173)
-- API : [http://localhost:3001/api/health](http://localhost:3001/api/health)
+Sans `FOOTBALL_API_KEY`, l'application **fonctionne quand même** : les pages
+football renvoient une liste vide et le seed génère des pronostics de démo.
 
 ---
 
-## Lancer les tests
+## 2. Build de production (local)
 
 ```bash
-cd server
-npm test
-# Jest — 2 suites, ~20 tests
+npm run build --workspace=client     # génère client/dist/
+NODE_ENV=production npm start --workspace=server
 ```
+
+Servir `client/dist/` avec n'importe quel serveur statique (nginx, `vite preview`,
+Netlify, Vercel…) et pointer `VITE_API_URL` vers l'URL publique de l'API.
 
 ---
 
-## Production
+## 3. Déploiement en ligne — Render (API) + Vercel (front)
 
-### Build du front-end
+### 3.1 API sur Render
+
+1. Pousser le dépôt sur GitHub.
+2. Sur [render.com](https://render.com) : **New + → Blueprint**, sélectionner le dépôt.
+   Render lit `render.yaml` et crée le service **kickzone-api**.
+3. Dans le service → **Environment**, renseigner :
+   - `FOOTBALL_API_KEY` = votre clé api-sports.io
+   - `ALLOWED_ORIGINS` = l'URL Vercel du front (ex. `https://kickzone.vercel.app`)
+4. Déployer. L'URL de l'API ressemble à `https://kickzone-api.onrender.com`.
+   Vérifier : `https://kickzone-api.onrender.com/api/health`.
+
+> Plan gratuit Render : le disque n'est pas persistant et le service se met en
+> veille après 15 min d'inactivité. Au réveil, la base SQLite est recréée et
+> re-remplie automatiquement — les articles/pronos de démo reviennent seuls.
+> Pour une base persistante : passer le service en plan payant, décommenter le
+> bloc `disk:` dans `render.yaml` et ajouter `DB_FILE=/var/data/kickzone.db`.
+
+### 3.2 Front sur Vercel
+
+1. Sur [vercel.com](https://vercel.com) : **Add New → Project**, importer le dépôt.
+2. **Root Directory** : `client` (Vercel détecte Vite, `client/vercel.json` gère le
+   fallback SPA).
+3. **Environment Variables** :
+   - `VITE_API_URL` = `https://kickzone-api.onrender.com/api`
+4. Déployer.
+
+### 3.3 Après le premier déploiement
+
+Mettre à jour `ALLOWED_ORIGINS` sur Render avec l'URL Vercel définitive, puis
+redéployer l'API.
+
+---
+
+## 4. Déploiement Docker (VPS)
 
 ```bash
-cd client
-npm run build
-# Génère client/dist/ — fichiers statiques optimisés
+cp server/.env.example .env          # renseigner JWT_SECRET, FOOTBALL_API_KEY, ALLOWED_ORIGINS
+npm run build --workspace=client     # génère client/dist/ servi par nginx
+docker compose up -d --build
 ```
 
-### Servir les fichiers statiques depuis Express (optionnel)
+- `app` : API Node, base SQLite dans le volume `db_data` (persistante).
+- `nginx` : sert `client/dist/` et proxifie `/api` vers `app:3001`
+  (voir `nginx/nginx.conf`).
 
-Dans `server/index.js`, ajouter :
+---
 
-```js
-const path = require('path');
-app.use(express.static(path.join(__dirname, '../client/dist')));
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../client/dist/index.html'));
-});
-```
-
-### Démarrer en production
+## 5. Tests
 
 ```bash
-cd server
-NODE_ENV=production node index.js
+npm test --workspace=server          # 4 suites, 15 tests (Jest + Supertest)
 ```
 
 ---
 
-## Déploiement sur un VPS (exemple Ubuntu 22.04)
+## Récapitulatif des commandes
 
-### 1. Préparer le serveur
-
-```bash
-# Installer Node.js 20
-curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
-sudo apt install -y nodejs
-
-# Installer MySQL
-sudo apt install -y mysql-server
-sudo mysql_secure_installation
-
-# Installer PM2 (process manager)
-sudo npm install -g pm2
-```
-
-### 2. Configurer MySQL
-
-```sql
-CREATE DATABASE warzone_cdl CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-CREATE USER 'codpulse'@'localhost' IDENTIFIED BY 'VotreMotDePasse!';
-GRANT ALL PRIVILEGES ON warzone_cdl.* TO 'codpulse'@'localhost';
-FLUSH PRIVILEGES;
-```
-
-### 3. Déployer l'application
-
-```bash
-git clone <url> /var/www/codpulse
-cd /var/www/codpulse/server
-cp .env.example .env    # renseigner les vraies valeurs
-npm install --production
-npx prisma generate
-npx prisma db push
-npx prisma db seed
-```
-
-### 4. Build front + configurer Nginx
-
-```bash
-cd /var/www/codpulse/client
-npm install && npm run build
-```
-
-Config Nginx `/etc/nginx/sites-available/codpulse` :
-
-```nginx
-server {
-    listen 80;
-    server_name votre-domaine.fr;
-
-    # Front-end React (SPA)
-    root /var/www/codpulse/client/dist;
-    index index.html;
-    location / {
-        try_files $uri $uri/ /index.html;
-    }
-
-    # API Express
-    location /api/ {
-        proxy_pass http://localhost:3001;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host $host;
-        proxy_cache_bypass $http_upgrade;
-    }
-
-    # Socket.io
-    location /socket.io/ {
-        proxy_pass http://localhost:3001;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "upgrade";
-    }
-}
-```
-
-### 5. Lancer avec PM2
-
-```bash
-cd /var/www/codpulse/server
-pm2 start index.js --name "codpulse-api"
-pm2 startup
-pm2 save
-```
-
----
-
-## Variables d'environnement de production
-
-En production, ne jamais stocker les secrets dans le code. Utiliser :
-- Un fichier `.env` hors du dépôt git
-- Ou des variables d'environnement système : `export JWT_SECRET=...`
-- Ou un gestionnaire de secrets (Vault, AWS Secrets Manager)
-
-Le fichier `.env` est listé dans `.gitignore` et ne doit **jamais** être committé.
-
----
-
-## Structure de la base de données (résumé)
-
-| Table | Description |
-|-------|-------------|
-| `articles` | Actualités Warzone / CDL |
-| `teams` | Équipes esport |
-| `players` | Joueurs professionnels |
-| `match_results` | Résultats des matchs CDL |
-| `users` | Comptes admin/editor |
-| `leaderboard_entries` | Classement Top 250 |
-| `weapons` | Armes meta Warzone |
-| `sync_logs` | Journal des synchronisations |
+| Besoin | Commande |
+|--------|----------|
+| Tout installer | `npm install` |
+| Réinitialiser la base | `npm run db:reset --workspace=server` |
+| Dev (API + front) | `npm run dev` |
+| Build front | `npm run build --workspace=client` |
+| Lancer l'API en prod | `npm start --workspace=server` |
+| Tests | `npm test --workspace=server` |

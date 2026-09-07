@@ -20,6 +20,8 @@ router.get('/fixtures/worldcup', async (req, res, next) => {
     const cached = getFromCache(cacheKey);
     if (cached) return res.json(cached);
 
+    if (!process.env.FOOTBALL_API_KEY) return res.json([]);
+
     console.log(`[API-FOOTBALL] GET /fixtures/worldcup date=${today}`);
     const { data } = await axios.get(`${API_BASE}/fixtures`, {
       headers: apiHeaders(),

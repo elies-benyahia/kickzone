@@ -1,5 +1,7 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { usePronostics, useCreatePronostic } from '../hooks/api';
+import { useAuth } from '../contexts/AuthContext';
 import PronoCard from '../components/PronoCard';
 import styles from './Pronos.module.css';
 import toast from 'react-hot-toast';
@@ -127,6 +129,7 @@ function PronoForm({ onClose }) {
 
 export default function Pronos() {
   const { data: pronostics, isLoading } = usePronostics();
+  const { user } = useAuth();
   const [filter, setFilter] = useState('all');
   const [showForm, setShowForm] = useState(false);
 
@@ -153,9 +156,15 @@ export default function Pronos() {
             Les pronostics de la communauté KickZone
           </p>
         </div>
-        <button className={styles.newPronoBtn} onClick={() => setShowForm(true)}>
-          + Nouveau prono
-        </button>
+        {user ? (
+          <button className={styles.newPronoBtn} onClick={() => setShowForm(true)}>
+            + Nouveau prono
+          </button>
+        ) : (
+          <Link to="/connexion" className={styles.newPronoBtn}>
+            Se connecter pour pronostiquer
+          </Link>
+        )}
       </div>
 
       {total > 0 && (

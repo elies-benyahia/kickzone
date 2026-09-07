@@ -1,17 +1,7 @@
 require('dotenv').config({ path: require('path').join(__dirname, '../.env') });
-const mysql  = require('mysql2/promise');
 const bcrypt = require('bcryptjs');
 const axios  = require('axios');
-
-const pool = mysql.createPool({
-  host:     process.env.DB_HOST || 'localhost',
-  port:     parseInt(process.env.DB_PORT) || 3306,
-  user:     process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || '',
-  database: process.env.DB_NAME || 'warzone_cdl',
-  waitForConnections: true,
-  connectionLimit: 5,
-});
+const pool   = require('../config/db');
 
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
@@ -39,9 +29,35 @@ async function createAdmin() {
 }
 
 // ─── 2. Vrais matchs API Football ─────────────────────────────────────────────
+// Matchs de démonstration (utilisés si l'API Football n'est pas disponible)
+// pour que la page Pronostics ne soit jamais vide devant le jury.
+function demoFixtures() {
+  const mk = (id, hId, h, aId, a, league, daysFromNow) => {
+    const d = new Date();
+    d.setDate(d.getDate() + daysFromNow);
+    d.setHours(21, 0, 0, 0);
+    return {
+      fixture: { id, date: d.toISOString() },
+      league: { name: league },
+      teams: { home: { id: hId, name: h }, away: { id: aId, name: a } },
+    };
+  };
+  return [
+    mk(9001, 85, 'France', 138, 'Portugal', 'Coupe du Monde 2026', 2),
+    mk(9002, 131, 'Brésil', 9, 'Espagne', 'Coupe du Monde 2026', 3),
+    mk(9003, 10, 'Angleterre', 26, 'Argentine', 'Coupe du Monde 2026', 3),
+    mk(9004, 25, 'Allemagne', 21, 'Pays-Bas', 'Coupe du Monde 2026', 4),
+    mk(9005, 85, 'Paris Saint-Germain', 50, 'Manchester City', 'Ligue des Champions', 6),
+    mk(9006, 541, 'Real Madrid', 529, 'Barcelone', 'La Liga', 7),
+  ];
+}
+
 async function getUpcomingFixtures() {
   const API_KEY = process.env.FOOTBALL_API_KEY;
-  if (!API_KEY) { console.log('[SEED] ⚠️  FOOTBALL_API_KEY manquant'); return []; }
+  if (!API_KEY) {
+    console.log('[SEED] ⚠️  FOOTBALL_API_KEY manquant — matchs de démonstration utilisés');
+    return demoFixtures();
+  }
 
   const IMPORTANT_LEAGUES = new Set([1, 2, 3, 39, 61, 140, 78, 135]);
 
@@ -75,7 +91,7 @@ async function getUpcomingFixtures() {
   }
 
   console.log(`[SEED] ✅ ${fixtures.length} matchs trouvés`);
-  return fixtures.slice(0, 8);
+  return fixtures.length ? fixtures.slice(0, 8) : demoFixtures();
 }
 
 // ─── 3. Pronostics ────────────────────────────────────────────────────────────
@@ -175,11 +191,11 @@ async function createTransferArticles() {
           `INSERT INTO articles
              (slug, title, summary, content, image_url, category, author, published_at)
            VALUES (?, ?, ?, ?, ?, 'TRANSFERT', 'Rédaction KickZone', ?)
-           ON DUPLICATE KEY UPDATE
-             title     = VALUES(title),
-             summary   = VALUES(summary),
-             content   = VALUES(content),
-             image_url = VALUES(image_url)`,
+           ON CONFLICT(slug) DO UPDATE SET
+             title     = excluded.title,
+             summary   = excluded.summary,
+             content   = excluded.content,
+             image_url = excluded.image_url`,
           [
             slug,
             title,
@@ -293,11 +309,11 @@ async function createEditorialArticles() {
     await pool.execute(
       `INSERT INTO articles (slug, title, summary, content, image_url, category, author, published_at)
        VALUES (?, ?, ?, ?, ?, ?, 'Rédaction KickZone', ?)
-       ON DUPLICATE KEY UPDATE
-         title     = VALUES(title),
-         summary   = VALUES(summary),
-         content   = VALUES(content),
-         image_url = VALUES(image_url)`,
+       ON CONFLICT(slug) DO UPDATE SET
+         title     = excluded.title,
+         summary   = excluded.summary,
+         content   = excluded.content,
+         image_url = excluded.image_url`,
       [a.slug, a.title, a.summary, a.content ?? null, a.imageUrl, a.category, a.date]
     );
     console.log(`  ✅ Article: ${a.title.substring(0, 55)}...`);
@@ -306,8 +322,8 @@ async function createEditorialArticles() {
 }
 
 // ─── MAIN ─────────────────────────────────────────────────────────────────────
-async function main() {
-  console.log('🌱 Démarrage seed KickZone (mysql2)...\n');
+async function main({ closePool = true } = {}) {
+  console.log('🌱 Démarrage seed KickZone...\n');
 
   const adminId = await createAdmin();
 
@@ -325,7 +341,23 @@ async function main() {
   const [[{ total_pronos }]]   = await pool.execute('SELECT COUNT(*) as total_pronos FROM pronostics');
   console.log(`\n✅ SEED TERMINÉ — ${total_articles} articles, ${total_pronos} pronostics`);
 
-  await pool.end();
+  if (closePool) await pool.end();
 }
 
-main().catch(e => { console.error('[SEED] ❌', e.message); process.exit(1); });
+// Seed automatique au démarrage du serveur si la base est vide (utile en ligne).
+async function seedIfEmpty() {
+  try {
+    const [[{ n }]] = await pool.execute('SELECT COUNT(*) AS n FROM articles');
+    if (n > 0) return;
+    console.log('[SEED] Base vide détectée — seed automatique...');
+    await main({ closePool: false });
+  } catch (e) {
+    console.error('[SEED] seedIfEmpty échoué :', e.message);
+  }
+}
+
+module.exports = { main, seedIfEmpty };
+
+if (require.main === module) {
+  main().catch(e => { console.error('[SEED] ❌', e.message); process.exit(1); });
+}
