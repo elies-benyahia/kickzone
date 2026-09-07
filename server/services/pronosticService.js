@@ -1,31 +1,21 @@
-// ============================================================================
-//  services/pronosticService.js — logique métier + SQL des pronostics
-// ============================================================================
+// services/pronosticService.js — logique + SQL des pronostics.
 
 const pool = require('../config/db');
 
-// Liste des pronostics, avec l'email/pseudo de l'auteur (jointure sur users).
-// Si userId est fourni, on ne renvoie que les pronostics de cet utilisateur.
+// Liste des pronostics + email/pseudo de l'auteur (jointure sur users).
 const getPronostics = async (userId = null) => {
-  // "AS xxx" renomme les colonnes SQL (snake_case) en camelCase pour le front.
-  const base = `SELECT p.id, p.fixture_id AS fixtureId,
-            p.home_team AS homeTeam, p.away_team AS awayTeam,
+  const base = `SELECT p.id, p.fixture_id AS fixtureId, p.home_team AS homeTeam, p.away_team AS awayTeam,
             p.home_team_id AS homeTeamId, p.away_team_id AS awayTeamId,
-            p.prediction, p.score_home AS scoreHome, p.score_away AS scoreAway,
-            p.result, p.confidence,
-            p.league, p.match_date AS matchDate,
-            p.user_id AS userId, p.created_at AS createdAt,
+            p.prediction, p.score_home AS scoreHome, p.score_away AS scoreAway, p.result, p.confidence,
+            p.league, p.match_date AS matchDate, p.user_id AS userId, p.created_at AS createdAt,
             u.email AS userEmail, u.username AS username
-     FROM pronostics p
-     JOIN users u ON p.user_id = u.id`;         // jointure : associe chaque prono à son auteur
-
+     FROM pronostics p JOIN users u ON p.user_id = u.id`;
   const [rows] = userId
     ? await pool.execute(`${base} WHERE p.user_id = ? ORDER BY p.match_date DESC`, [Number(userId)])
     : await pool.execute(`${base} ORDER BY p.match_date DESC`);
   return rows;
 };
 
-// Création d'un pronostic. On convertit / sécurise chaque valeur avant l'INSERT.
 const createPronostic = async ({
   fixtureId, homeTeam, awayTeam, homeTeamId, awayTeamId,
   prediction, scoreHome, scoreAway, confidence, league, matchDate, userId,
@@ -37,28 +27,25 @@ const createPronostic = async ({
      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       fixtureId  ? Number(fixtureId)  : null,
-      homeTeam,
-      awayTeam,
+      homeTeam, awayTeam,
       homeTeamId ? Number(homeTeamId) : null,
       awayTeamId ? Number(awayTeamId) : null,
       prediction,
       scoreHome != null ? Number(scoreHome) : null,
       scoreAway != null ? Number(scoreAway) : null,
-      Number(confidence) || 50,          // 50 % par défaut
+      Number(confidence) || 50,
       league ?? null,
       new Date(matchDate),
-      Number(userId),                    // auteur (ajouté par le contrôleur)
+      Number(userId),
     ]
   );
   return { id: result.insertId, fixtureId, homeTeam, awayTeam, prediction, scoreHome, scoreAway, confidence, league, matchDate };
 };
 
-// Mise à jour (typiquement : passer le résultat à CORRECT ou RATE après le match).
+// Après le match : passer le résultat à CORRECT ou RATE.
 const updatePronostic = async (id, { prediction, confidence, result }) => {
-  await pool.execute(
-    'UPDATE pronostics SET prediction=?, confidence=?, result=? WHERE id=?',
-    [prediction, Number(confidence), result, Number(id)]
-  );
+  await pool.execute('UPDATE pronostics SET prediction=?, confidence=?, result=? WHERE id=?',
+    [prediction, Number(confidence), result, Number(id)]);
   return { id: Number(id), prediction, confidence, result };
 };
 
@@ -67,20 +54,14 @@ const deletePronostic = async (id) => {
   return { success: true };
 };
 
-// Statistiques globales : total, corrects, ratés, en attente, taux de réussite.
-// Astuce SQL : `result = 'CORRECT'` vaut 1 ou 0, donc SUM(...) compte les lignes.
+// Stats : `result = 'CORRECT'` vaut 1/0, donc SUM(...) compte les lignes.
 const getStats = async () => {
   const [[stats]] = await pool.execute(
-    `SELECT
-       COUNT(*) AS total,
+    `SELECT COUNT(*) AS total,
        SUM(result = 'CORRECT')    AS correct,
        SUM(result = 'RATE')       AS rate,
        SUM(result = 'EN_ATTENTE') AS en_attente,
-       ROUND(
-         SUM(result = 'CORRECT')
-         / NULLIF(SUM(result != 'EN_ATTENTE'), 0)   -- évite la division par zéro
-         * 100, 1
-       ) AS taux_reussite
+       ROUND(SUM(result = 'CORRECT') / NULLIF(SUM(result != 'EN_ATTENTE'), 0) * 100, 1) AS taux_reussite
      FROM pronostics`
   );
   return stats;

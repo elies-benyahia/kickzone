@@ -1,10 +1,4 @@
-// ============================================================================
-//  Transferts — page mercato :
-//   - un bandeau de brèves RSS en direct
-//   - des statistiques (nb officiels, rumeurs, volume total en M€)
-//   - la liste des transferts (données dans src/data/transfers.js), filtrable
-//   - les articles "TRANSFERT" de la rédaction
-// ============================================================================
+// Transferts — page mercato : brèves RSS, stats, liste des transferts (src/data/transfers.js), articles.
 
 import { useState } from 'react';
 import { useArticles, useTransferNews } from '../hooks/api';

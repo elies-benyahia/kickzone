@@ -1,10 +1,4 @@
-// ============================================================================
-//  Admin — tableau de bord de la rédaction (/admin).
-//  Deux onglets : gérer les Articles (créer / modifier / supprimer) et les
-//  Pronostics (créer, marquer le résultat). Accès réservé : au chargement,
-//  on redirige vers /admin/login s'il n'y a pas de jeton.
-//  Toutes les actions passent par l'API avec le jeton JWT (voir hooks/api.js).
-// ============================================================================
+// Admin — tableau de bord de la rédaction (/admin).
 
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';

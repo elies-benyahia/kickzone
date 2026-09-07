@@ -1,7 +1,4 @@
-// ============================================================================
-//  Classements — classement d'un championnat, avec des onglets pour changer
-//  de compétition. Le tableau lui-même est le composant <StandingsTable/>.
-// ============================================================================
+// Classements — classement d'un championnat, avec des onglets pour changer
 
 import { useState } from 'react';
 import { useStandings } from '../hooks/api';

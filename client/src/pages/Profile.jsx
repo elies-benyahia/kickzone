@@ -1,7 +1,4 @@
-// ============================================================================
-//  Profile — page "Mon profil" (/profil) : infos du compte, statistiques
-//  personnelles de pronostics, et la liste de MES pronostics.
-// ============================================================================
+// Profile — page "Mon profil" (/profil) : infos du compte, statistiques
 
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';

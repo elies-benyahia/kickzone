@@ -1,7 +1,4 @@
-// ============================================================================
-//  Matches — calendrier des matchs : un sélecteur de date (±10 jours) et un
-//  filtre par compétition. Les matchs sont regroupés par ligue.
-// ============================================================================
+// Matches — calendrier des matchs : un sélecteur de date (±10 jours) et un
 
 import { useState, useRef, useEffect } from 'react';
 import { useFixturesByDate } from '../hooks/api';

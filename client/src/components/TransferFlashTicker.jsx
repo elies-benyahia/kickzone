@@ -1,12 +1,8 @@
-// ============================================================================
-//  TransferFlashTicker — bandeau "MERCATO" défilant en haut du site (dans la Navbar).
-//  Le texte défile en boucle grâce à une animation CSS ; ici on se contente
-//  d'afficher deux fois la liste pour que la boucle soit sans "trou".
-// ============================================================================
+// TransferFlashTicker — bandeau "MERCATO" défilant dans la Navbar (animation CSS).
 
 import styles from './TransferFlashTicker.module.css';
 
-// Brèves affichées. tag "OFFICIEL" = transfert acté, tag "INFO" = rumeur.
+// Brèves affichées. tag "OFFICIEL" = transfert acté, "INFO" = rumeur.
 const FLASHES = [
   { tag: 'OFFICIEL', text: 'ENZO FERNÁNDEZ signe à Manchester City pour 145M€ (record de l\'été)' },
   { tag: 'OFFICIEL', text: 'DIOMANDÉ rejoint le Real Madrid — 130M€ en provenance de Leipzig' },
@@ -24,7 +20,7 @@ const FLASHES = [
 ];
 
 export default function TransferFlashTicker() {
-  const items = [...FLASHES, ...FLASHES]; // liste doublée -> défilement en boucle continue
+  const items = [...FLASHES, ...FLASHES]; // liste doublée -> boucle sans "trou"
 
   return (
     <div className={styles.bar}>

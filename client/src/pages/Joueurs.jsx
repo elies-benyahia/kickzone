@@ -1,8 +1,4 @@
-// ============================================================================
-//  Joueurs — champ de recherche de joueur avec suggestions.
-//  À chaque frappe, on interroge l'API (à partir de 2 lettres) et on propose
-//  une liste ; cliquer sur un joueur mène à sa fiche (/joueur/:id).
-// ============================================================================
+// Joueurs — champ de recherche de joueur avec suggestions.
 
 import { useState } from 'react';
 import { Link } from 'react-router-dom';

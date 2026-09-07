@@ -1,8 +1,4 @@
-// ============================================================================
-//  Register — création de compte (/inscription).
-//  Vérifications côté client (mots de passe identiques, longueur) AVANT
-//  l'appel API. Le serveur revalide de toute façon (voir routes/auth.js).
-// ============================================================================
+// Register — création de compte (/inscription).
 
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';

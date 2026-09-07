@@ -1,7 +1,4 @@
-// ============================================================================
-//  Article — lecture d'un article (/article/:slug).
-//  Le slug est lu dans l'URL avec useParams(), puis passé au hook useArticle().
-// ============================================================================
+// Article — lecture d'un article (/article/:slug).
 
 import { useParams } from 'react-router-dom';
 import { useArticle, useArticles } from '../hooks/api';

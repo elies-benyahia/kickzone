@@ -1,8 +1,4 @@
-// ============================================================================
-//  Pronos — liste publique des pronostics + statistiques (taux de réussite).
-//  Un utilisateur connecté peut en publier un via la fenêtre <PronoForm/>.
-//  Un visiteur non connecté voit un bouton "Se connecter pour pronostiquer".
-// ============================================================================
+// Pronos — liste publique des pronostics + statistiques (taux de réussite).
 
 import { useState } from 'react';
 import { Link } from 'react-router-dom';

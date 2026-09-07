@@ -1,14 +1,5 @@
-// ============================================================================
-//  database/seed.js — remplit la base avec des données de départ
-//   1. le compte administrateur
-//   2. les articles éditoriaux (mercato 2026, Ligue des Champions...)
-//   3. des pronostics (vrais matchs si l'API est configurée, sinon démo)
-//   4. des articles "transfert" générés depuis l'API-Football (si clé présente)
-//
-//  Deux façons de le lancer :
-//   - "npm run db:reset"        -> exécute main() (voir tout en bas)
-//   - au démarrage du serveur   -> seedIfEmpty() ne remplit que si la base est vide
-// ============================================================================
+// database/seed.js — remplit la base : admin, articles, pronostics.
+// Lancé par "npm run db:reset" (main) ou au démarrage si la base est vide (seedIfEmpty).
 
 require('dotenv').config({ path: require('path').join(__dirname, '../.env') });
 const bcrypt = require('bcryptjs');
@@ -29,11 +20,10 @@ const slugify = (str) =>
 
 // ─── 1. Admin ─────────────────────────────────────────────────────────────────
 async function createAdmin() {
-  // Mot de passe haché (bcrypt) comme pour n'importe quel utilisateur.
   const hash = await bcrypt.hash(process.env.ADMIN_PASSWORD || 'Admin2024!', 12);
-  // "INSERT IGNORE" : ne fait rien si l'admin existe déjà (email unique).
+  // OR IGNORE : ne fait rien si l'admin existe déjà (email unique).
   await pool.execute(
-    'INSERT IGNORE INTO users (email, password, role) VALUES (?, ?, ?)',
+    'INSERT OR IGNORE INTO users (email, password, role) VALUES (?, ?, ?)',
     [process.env.ADMIN_EMAIL || 'admin@kickzone.fr', hash, 'ADMIN']
   );
   const [[admin]] = await pool.execute('SELECT id FROM users WHERE email = ? LIMIT 1', [
@@ -326,8 +316,7 @@ async function createEditorialArticles() {
 }
 
 // ─── MAIN ─────────────────────────────────────────────────────────────────────
-// Enchaîne les 4 étapes. `closePool` : ferme la connexion à la fin (true quand
-// on lance le script à la main, false quand le serveur l'appelle au démarrage).
+// closePool=false quand le serveur appelle le seed au démarrage (il continue de tourner).
 async function main({ closePool = true } = {}) {
   console.log('🌱 Démarrage seed KickZone...\n');
 
@@ -350,8 +339,7 @@ async function main({ closePool = true } = {}) {
   if (closePool) await pool.end();
 }
 
-// Remplit la base UNIQUEMENT si elle est vide (aucun article).
-// Appelée par index.js au démarrage : garantit un site jamais vide en ligne.
+// Remplit la base seulement si elle est vide (appelée par index.js au démarrage).
 async function seedIfEmpty() {
   try {
     const [[{ n }]] = await pool.execute('SELECT COUNT(*) AS n FROM articles');
@@ -365,8 +353,7 @@ async function seedIfEmpty() {
 
 module.exports = { main, seedIfEmpty };
 
-// "require.main === module" est vrai uniquement si ce fichier est lancé
-// directement (node database/seed.js), pas quand il est importé par index.js.
+// Vrai seulement si lancé directement (node database/seed.js), pas si importé par index.js.
 if (require.main === module) {
   main().catch(e => { console.error('[SEED] ❌', e.message); process.exit(1); });
 }

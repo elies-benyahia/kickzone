@@ -1,7 +1,4 @@
-// ============================================================================
-//  Joueur — fiche d'un joueur (/joueur/:id) : profil, stats de la saison,
-//  historique des transferts, palmarès. Données via usePlayer(id).
-// ============================================================================
+// Joueur — fiche d'un joueur (/joueur/:id) : profil, stats de la saison,
 
 import { useParams, Link } from 'react-router-dom';
 import { usePlayer } from '../hooks/api';

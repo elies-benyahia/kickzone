@@ -1,9 +1,4 @@
-// ============================================================================
-//  Home — page d'accueil en 3 colonnes :
-//   - gauche  : matchs du jour des grandes ligues (LeftSidebar)
-//   - centre  : "Top News" (RSS) + grille d'actus + derniers pronos
-//   - droite  : encart mercato (RightSidebar)
-// ============================================================================
+// Home — accueil 3 colonnes : matchs du jour (gauche), actus + pronos (centre), mercato (droite).
 
 import { Link } from 'react-router-dom';
 import { useFixturesToday, useArticles, useNewsLatest, usePronostics } from '../hooks/api';

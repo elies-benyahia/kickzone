@@ -1,27 +1,17 @@
-// ============================================================================
-//  ArticleCard — vignette d'article (image + titre + méta).
-//  Deux cas :
-//   - article de NOTRE base  -> il a un `slug`  -> lien interne /article/:slug
-//   - article d'un flux RSS  -> pas de slug     -> lien externe (nouvel onglet)
-// ============================================================================
+// ArticleCard — vignette d'article. Lien interne si l'article vient de notre base (slug),
+// lien externe (nouvel onglet) si c'est une actu RSS.
 
 import { Link } from 'react-router-dom';
 import styles from './ArticleCard.module.css';
 
-// Couleur du badge selon la catégorie de l'article.
 const CATEGORY_COLOR = {
-  TRANSFERT: '#f59e0b',
-  ACTU: '#8b5cf6',
-  ANALYSE: '#1a56db',
-  INTERVIEW: '#16a34a',
-  RESULTATS: '#ef4444',
+  TRANSFERT: '#f59e0b', ACTU: '#8b5cf6', ANALYSE: '#1a56db', INTERVIEW: '#16a34a', RESULTATS: '#ef4444',
 };
 
-// Transforme une date en texte relatif : "il y a 3h", "hier", "il y a 5 j"...
+// Date -> texte relatif : "il y a 3h", "hier", "il y a 5 j"...
 const relativeDate = (d) => {
   if (!d) return '';
-  const diff = Date.now() - new Date(d);
-  const h = Math.floor(diff / 3600000);          // écart en heures
+  const h = Math.floor((Date.now() - new Date(d)) / 3600000);
   if (h < 1) return 'il y a moins d\'1h';
   if (h < 24) return `il y a ${h}h`;
   const days = Math.floor(h / 24);
@@ -30,20 +20,19 @@ const relativeDate = (d) => {
   return new Date(d).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
 };
 
-// Estimation du temps de lecture : ~200 mots par minute.
+// Temps de lecture estimé (~200 mots/min).
 const readTime = (a) => {
   const words = ((a.content ?? '') + (a.summary ?? '')).split(/\s+/).length;
   return `${Math.max(1, Math.round(words / 200))} min`;
 };
 
-// Contenu de la carte (partagé entre le lien interne et le lien externe).
+// Contenu partagé entre le lien interne et le lien externe.
 function CardInner({ article }) {
   const catColor = CATEGORY_COLOR[article.category] ?? '#1a56db';
-  const isRss = !article.slug; // vient d'un flux RSS ?
+  const isRss = !article.slug;
 
   return (
     <>
-      {/* Image (ou dégradé de remplacement si pas d'image) + badge catégorie */}
       <div className={styles.imgWrap}>
         {article.imageUrl && (
           <img src={article.imageUrl} alt={article.title} className={styles.img} loading="lazy"
@@ -53,18 +42,14 @@ function CardInner({ article }) {
           <div className={styles.imgPlaceholder}
             style={{ background: `linear-gradient(135deg, ${catColor}22 0%, ${catColor}08 100%)` }} />
         )}
-        {article.category && (
-          <span className={styles.catBadge} style={{ background: catColor }}>{article.category}</span>
-        )}
+        {article.category && <span className={styles.catBadge} style={{ background: catColor }}>{article.category}</span>}
       </div>
 
-      {/* Titre + ligne de méta (source, date, temps de lecture, vues) */}
       <div className={styles.body}>
         <h3 className={styles.title}>{article.title}</h3>
         <div className={styles.meta}>
           {article.sourceLogo && (
-            <img src={article.sourceLogo} alt="" className={styles.sourceLogo}
-              onError={e => e.target.style.display = 'none'} />
+            <img src={article.sourceLogo} alt="" className={styles.sourceLogo} onError={e => e.target.style.display = 'none'} />
           )}
           {(article.sourceName || article.author) && (
             <span className={styles.sourceName}>{article.sourceName || article.author}</span>
@@ -86,15 +71,9 @@ function CardInner({ article }) {
 }
 
 export default function ArticleCard({ article }) {
-  // Article de notre base -> navigation interne (React Router).
   if (article.slug) {
-    return (
-      <Link to={`/article/${article.slug}`} className={styles.card}>
-        <CardInner article={article} />
-      </Link>
-    );
+    return <Link to={`/article/${article.slug}`} className={styles.card}><CardInner article={article} /></Link>;
   }
-  // Article RSS -> ouverture du site d'origine dans un nouvel onglet.
   return (
     <a href={article.link} target="_blank" rel="noopener noreferrer" className={styles.card}>
       <CardInner article={article} />

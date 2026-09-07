@@ -1,20 +1,11 @@
-// ============================================================================
+// LigueDesChampions — phase de ligue (format 2024/25) : 36 équipes, 1 classement, 8 journées.
+//   1-8 -> 8es de finale, 9-24 -> barrages, 25-36 -> éliminés.
+// Classement réel via l'API si la clé est configurée, sinon les 36 équipes engagées à 0 point.
+
 import { useState } from 'react';
 import { useStandings } from '../hooks/api';
 import { UCL_CALENDAR, UCL_TEAMS } from '../data/uclCalendar'; // données dans src/data/
 import styles from './LigueDesChampions.module.css';
-
-/*
- * Ligue des Champions — phase de ligue (format en vigueur depuis 2024/25)
- * 36 équipes, un seul classement, 8 matchs par équipe :
- *   1 → 8   : qualifiés directement pour les 8es de finale
- *   9 → 24  : barrages (play-off) pour accéder aux 8es
- *   25 → 36 : éliminés
- *
- * Si la clé API football est configurée, on affiche le classement réel de la
- * saison en cours. Sinon, on affiche les 36 équipes engagées 2026/2027,
- * toutes à égalité (0 point), avant la 1re journée.
- */
 
 const SEASON = '2026/2027';
 

@@ -1,9 +1,5 @@
-// ============================================================================
-//  Match — page détail d'un match (/match/:id) avec 5 onglets :
-//  Résumé, Composition, Statistiques, H2H (confrontations), Classement.
-//  Optimisation : les données d'un onglet ne sont chargées QUE lorsqu'il est
-//  ouvert (on passe null au hook tant que l'onglet n'est pas sélectionné).
-// ============================================================================
+// Match — détail d'un match (/match/:id) : 5 onglets (Résumé, Compo, Stats, H2H, Classement).
+// Astuce : les données d'un onglet ne sont chargées que quand il est ouvert.
 
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';

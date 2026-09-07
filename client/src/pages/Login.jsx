@@ -1,8 +1,4 @@
-// ============================================================================
-//  Login — page de connexion publique (/connexion).
-//  login() vient du contexte d'authentification : il appelle l'API, stocke le
-//  jeton et met à jour l'utilisateur. On revient ensuite là où on voulait aller.
-// ============================================================================
+// Login — page de connexion publique (/connexion).
 
 import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';

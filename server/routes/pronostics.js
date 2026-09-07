@@ -1,14 +1,12 @@
-// ============================================================================
-//  routes/pronostics.js — pronostics des utilisateurs
-// ============================================================================
+// routes/pronostics.js — pronostics des utilisateurs.
 
 const router = require('express').Router();
 const { list, create, update, remove } = require('../controllers/pronosticController');
 const { authenticate, requireAdmin } = require('../middlewares/auth');
 
-router.get('/',       list);                              // GET    -> tous les pronostics (public)
-router.post('/',      authenticate, create);              // POST   -> créer un pronostic (connexion requise)
-router.put('/:id',    authenticate, requireAdmin, update); // PUT   -> mettre à jour le résultat (admin)
-router.delete('/:id', authenticate, requireAdmin, remove); // DELETE -> supprimer (admin)
+router.get('/',       list);                               // public
+router.post('/',      authenticate, create);               // connexion requise
+router.put('/:id',    authenticate, requireAdmin, update); // admin (marquer le résultat)
+router.delete('/:id', authenticate, requireAdmin, remove); // admin
 
 module.exports = router;

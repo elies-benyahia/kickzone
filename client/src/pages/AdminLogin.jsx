@@ -1,7 +1,4 @@
-// ============================================================================
-//  AdminLogin — formulaire de connexion de l'espace d'administration (/admin/login).
-//  En cas de succès : on stocke le jeton JWT et on redirige vers /admin.
-// ============================================================================
+// AdminLogin — formulaire de connexion de l'espace d'administration (/admin/login).
 
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';

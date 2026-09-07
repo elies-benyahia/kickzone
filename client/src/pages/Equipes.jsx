@@ -1,7 +1,4 @@
-// ============================================================================
-//  Equipes — fiche d'une équipe (/equipes/:id) : infos + 2 onglets
-//  (Effectif regroupé par poste, Statistiques de la saison).
-// ============================================================================
+// Equipes — fiche d'une équipe (/equipes/:id) : infos + 2 onglets
 
 import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';

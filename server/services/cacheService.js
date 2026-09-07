@@ -1,30 +1,17 @@
-// ============================================================================
-//  services/cacheService.js — petit cache en mémoire
-//  But : éviter de rappeler l'API-Football à chaque visite. Une réponse est
-//  gardée 5 minutes, puis considérée périmée.
-//  Le cache vit dans la mémoire du serveur : il est vidé à chaque redémarrage.
-// ============================================================================
+// services/cacheService.js — cache en mémoire (5 min) pour éviter de rappeler l'API-Football.
 
-const cache = new Map();                // clé (string) -> { data, expiresAt }
-const TTL_MS = 5 * 60 * 1000;           // durée de vie d'une entrée : 5 minutes
+const cache = new Map();               // clé -> { data, expiresAt }
+const TTL_MS = 5 * 60 * 1000;
 
-// Renvoie la valeur si elle existe ET n'est pas périmée, sinon null.
 const getFromCache = (key) => {
   const entry = cache.get(key);
   if (!entry) return null;
-  if (Date.now() > entry.expiresAt) {   // périmée -> on la jette
-    cache.delete(key);
-    return null;
-  }
+  if (Date.now() > entry.expiresAt) { cache.delete(key); return null; } // périmé
   return entry.data;
 };
 
-// Stocke une valeur avec sa date d'expiration.
-const setInCache = (key, data) => {
-  cache.set(key, { data, expiresAt: Date.now() + TTL_MS });
-};
+const setInCache = (key, data) => cache.set(key, { data, expiresAt: Date.now() + TTL_MS });
 
-// Vide tout le cache (utilisé par les tests).
-const clearCache = () => cache.clear();
+const clearCache = () => cache.clear(); // utilisé par les tests
 
 module.exports = { getFromCache, setInCache, clearCache };

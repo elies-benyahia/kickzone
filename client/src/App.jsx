@@ -1,27 +1,18 @@
-// ============================================================================
-//  App.jsx — structure générale de l'application
-//   - fournit React Query (cache des appels API) à toute l'appli
-//   - fournit le contexte d'authentification (utilisateur connecté)
-//   - déclare la table des routes (URL -> page)
-// ============================================================================
+// App.jsx — structure de l'appli : fournit React Query + le contexte d'auth, et déclare les routes (URL -> page).
 
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { lazy, Suspense, useEffect } from 'react';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
-import { Toaster } from 'react-hot-toast'; // petites notifications ("Pronostic publié !")
+import { Toaster } from 'react-hot-toast';
 import Navbar from './components/Navbar';
 import { AuthProvider } from './contexts/AuthContext';
 
-// Configuration commune à tous les appels API :
-//  - staleTime 5 min : une donnée déjà chargée est considérée "fraîche" 5 min
-//  - retry 1 : une seule nouvelle tentative en cas d'échec
-//  - refetchOnWindowFocus false : ne recharge pas quand on revient sur l'onglet
+// Réglages communs à tous les appels API (cache 5 min, 1 seule nouvelle tentative).
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 5 * 60 * 1000, retry: 1, refetchOnWindowFocus: false } },
 });
 
-// lazy(...) : chaque page est chargée seulement quand on y accède
-// (le navigateur ne télécharge pas tout le site d'un coup -> démarrage plus rapide).
+// lazy() : chaque page n'est téléchargée que lorsqu'on y accède.
 const Home        = lazy(() => import('./pages/Home'));
 const Matches     = lazy(() => import('./pages/Matches'));
 const Match       = lazy(() => import('./pages/Match'));
@@ -41,19 +32,17 @@ const Login       = lazy(() => import('./pages/Login'));
 const Register    = lazy(() => import('./pages/Register'));
 const Profile     = lazy(() => import('./pages/Profile'));
 
-// Affiché pendant le chargement d'une page (fallback de <Suspense>).
 const Loader = () => (
   <div style={{ minHeight: '40vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)', fontWeight: 600 }}>
     Chargement...
   </div>
 );
 
-// Barre de navigation + zone de contenu (la page correspondant à l'URL).
 function AppLayout() {
-  const location = useLocation();                       // URL courante
+  const location = useLocation();
   const isAdmin = location.pathname.startsWith('/admin'); // pages admin : pas de Navbar publique
 
-  // Au premier rendu : applique le thème clair si l'utilisateur l'avait choisi.
+  // Applique le thème clair si l'utilisateur l'avait choisi.
   useEffect(() => {
     const saved = localStorage.getItem('kz_theme');
     if (saved === 'light') document.documentElement.setAttribute('data-theme', 'light');
@@ -63,10 +52,9 @@ function AppLayout() {
   return (
     <>
       {!isAdmin && <Navbar />}
-      {/* <Suspense> affiche <Loader/> le temps que la page "lazy" se télécharge */}
       <Suspense fallback={<Loader />}>
         <Routes>
-          {/* Chaque <Route> associe une URL à une page. ":id" / ":slug" = paramètre variable. */}
+          {/* URL -> page. ":id" / ":slug" = paramètre variable. */}
           <Route path="/"                    element={<Home />} />
           <Route path="/matches"             element={<Matches />} />
           <Route path="/match/:id"           element={<Match />} />
@@ -84,19 +72,18 @@ function AppLayout() {
           <Route path="/connexion"           element={<Login />} />
           <Route path="/inscription"         element={<Register />} />
           <Route path="/profil"              element={<Profile />} />
-          <Route path="*"                    element={<NotFound />} /> {/* toute autre URL -> 404 */}
+          <Route path="*"                    element={<NotFound />} /> {/* URL inconnue -> 404 */}
         </Routes>
       </Suspense>
     </>
   );
 }
 
-// Composant racine : empile les "fournisseurs" (providers) autour de l'appli.
 export default function App() {
   return (
-    <QueryClientProvider client={queryClient}>      {/* cache des appels API */}
-      <BrowserRouter>                               {/* gère la navigation / l'URL */}
-        <AuthProvider>                              {/* expose l'utilisateur connecté */}
+    <QueryClientProvider client={queryClient}>   {/* cache des appels API */}
+      <BrowserRouter>                            {/* gère l'URL / la navigation */}
+        <AuthProvider>                           {/* expose l'utilisateur connecté */}
           <AppLayout />
         </AuthProvider>
       </BrowserRouter>

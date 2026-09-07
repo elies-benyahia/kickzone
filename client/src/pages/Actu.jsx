@@ -1,8 +1,4 @@
-// ============================================================================
-//  Actu — grille d'articles de la rédaction, avec filtres par catégorie.
-//  Le 1er article (le plus récent) est mis en avant (FeaturedCard) quand
-//  aucun filtre n'est actif.
-// ============================================================================
+// Actu — grille d'articles de la rédaction, avec filtres par catégorie.
 
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
