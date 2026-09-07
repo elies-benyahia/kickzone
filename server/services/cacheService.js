@@ -1,15 +1,6 @@
+// Petit cache en mémoire : une valeur expire au bout de 5 minutes.
 const cache = new Map();
-
-const TTL = {
-  LIVE: 60,
-  PLAYERS: 5 * 60,
-  FIXTURES: 5 * 60,
-  STANDINGS: 30 * 60,
-  H2H: 60 * 60,
-  LINEUPS: 60 * 60,
-  TRANSFERS: 2 * 60 * 60,
-  DEFAULT: 5 * 60,
-};
+const TTL_MS = 5 * 60 * 1000;
 
 const getFromCache = (key) => {
   const entry = cache.get(key);
@@ -21,15 +12,10 @@ const getFromCache = (key) => {
   return entry.data;
 };
 
-const setInCache = (key, data, ttlSeconds = TTL.DEFAULT) => {
-  cache.set(key, { data, expiresAt: Date.now() + ttlSeconds * 1000 });
+const setInCache = (key, data) => {
+  cache.set(key, { data, expiresAt: Date.now() + TTL_MS });
 };
 
 const clearCache = () => cache.clear();
 
-const getCacheStats = () => ({
-  size: cache.size,
-  keys: [...cache.keys()],
-});
-
-module.exports = { getFromCache, setInCache, clearCache, getCacheStats, TTL };
+module.exports = { getFromCache, setInCache, clearCache };

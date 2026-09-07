@@ -1,219 +1,110 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 
+// Un seul client HTTP pour toute l'appli. Le token JWT est ajouté automatiquement.
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3001/api',
 });
-
-api.interceptors.request.use(cfg => {
+api.interceptors.request.use((cfg) => {
   const token = localStorage.getItem('kz_token');
   if (token) cfg.headers.Authorization = `Bearer ${token}`;
   return cfg;
 });
 
+// Raccourci : GET qui renvoie directement les données.
+const get = (url, params) => api.get(url, { params }).then((r) => r.data);
+
 export { api };
 
-// Helpers
-const isLive = (status) => ['1H','2H','HT','ET','P','LIVE','INT'].includes(status);
-const isFinished = (status) => ['FT','AET','PEN','AWD','WO'].includes(status);
+const MIN = 60 * 1000;
 
-const getRefetchInterval = (fixture) => {
-  if (!fixture) return false;
+// Un match "en direct" est rafraîchi chaque minute, un match terminé ne l'est plus.
+const LIVE = ['1H', '2H', 'HT', 'ET', 'P', 'LIVE', 'INT'];
+const refetchLive = (data) => {
+  const fixture = Array.isArray(data) ? data[0] : data;
   const status = fixture?.fixture?.status?.short;
-  if (isLive(status)) return 60 * 1000;
-  if (isFinished(status)) return false;
-  return 5 * 60 * 1000;
+  return LIVE.includes(status) ? MIN : false;
 };
 
-// Football hooks
+/* ─── Football ─────────────────────────────────────────────── */
 export const useFixturesToday = () =>
-  useQuery({
-    queryKey: ['fixtures-today'],
-    queryFn: () => api.get('/football/fixtures/today').then(r => r.data),
-    staleTime: 60 * 1000,
-    refetchInterval: 60 * 1000,
-  });
+  useQuery({ queryKey: ['fixtures-today'], queryFn: () => get('/football/fixtures/today'), refetchInterval: MIN });
 
 export const useFixturesByDate = (date) =>
-  useQuery({
-    queryKey: ['fixtures-date', date],
-    queryFn: () => api.get(`/football/fixtures/date/${date}`).then(r => r.data),
-    enabled: !!date,
-    staleTime: 2 * 60 * 1000,
-  });
+  useQuery({ queryKey: ['fixtures', date], queryFn: () => get(`/football/fixtures/date/${date}`), enabled: !!date });
 
 export const useFixture = (id) =>
-  useQuery({
-    queryKey: ['fixture', id],
-    queryFn: () => api.get(`/football/fixtures/${id}`).then(r => r.data),
-    enabled: !!id,
-    refetchInterval: (data) => {
-      const fixture = Array.isArray(data) ? data[0] : data;
-      return getRefetchInterval(fixture);
-    },
-  });
+  useQuery({ queryKey: ['fixture', id], queryFn: () => get(`/football/fixtures/${id}`), enabled: !!id, refetchInterval: refetchLive });
 
 export const useFixtureEvents = (id) =>
-  useQuery({
-    queryKey: ['fixture-events', id],
-    queryFn: () => api.get(`/football/fixtures/${id}/events`).then(r => r.data),
-    enabled: !!id,
-    refetchInterval: 60 * 1000,
-  });
+  useQuery({ queryKey: ['events', id], queryFn: () => get(`/football/fixtures/${id}/events`), enabled: !!id, refetchInterval: MIN });
 
 export const useLineups = (id) =>
-  useQuery({
-    queryKey: ['lineups', id],
-    queryFn: () => api.get(`/football/fixtures/${id}/lineups`).then(r => r.data),
-    enabled: !!id,
-    staleTime: 60 * 60 * 1000,
-  });
+  useQuery({ queryKey: ['lineups', id], queryFn: () => get(`/football/fixtures/${id}/lineups`), enabled: !!id });
 
 export const useFixtureStats = (id) =>
-  useQuery({
-    queryKey: ['fixture-stats', id],
-    queryFn: () => api.get(`/football/fixtures/${id}/stats`).then(r => r.data),
-    enabled: !!id,
-    staleTime: 5 * 60 * 1000,
-  });
+  useQuery({ queryKey: ['stats', id], queryFn: () => get(`/football/fixtures/${id}/stats`), enabled: !!id });
 
 export const useH2H = (t1, t2) =>
-  useQuery({
-    queryKey: ['h2h', t1, t2],
-    queryFn: () => api.get(`/football/h2h/${t1}/${t2}`).then(r => r.data),
-    enabled: !!(t1 && t2),
-    staleTime: 60 * 60 * 1000,
-  });
+  useQuery({ queryKey: ['h2h', t1, t2], queryFn: () => get(`/football/h2h/${t1}/${t2}`), enabled: !!(t1 && t2) });
 
-export const useStandings = (leagueId) =>
-  useQuery({
-    queryKey: ['standings', leagueId],
-    queryFn: () => api.get(`/football/standings/${leagueId}`).then(r => r.data),
-    staleTime: 30 * 60 * 1000,
-    enabled: !!leagueId,
-  });
-
-export const useLatestTransfers = () =>
-  useQuery({
-    queryKey: ['transfers-latest'],
-    queryFn: () => api.get('/football/transfers/latest').then(r => r.data),
-    staleTime: 2 * 60 * 60 * 1000,
-  });
+export const useStandings = (league) =>
+  useQuery({ queryKey: ['standings', league], queryFn: () => get(`/football/standings/${league}`), enabled: !!league });
 
 export const useTeam = (id) =>
-  useQuery({
-    queryKey: ['team', id],
-    queryFn: () => api.get(`/football/teams/${id}`).then(r => r.data),
-    enabled: !!id,
-    staleTime: 60 * 60 * 1000,
-  });
+  useQuery({ queryKey: ['team', id], queryFn: () => get(`/football/teams/${id}`), enabled: !!id });
 
 export const useTeamStats = (id, league = 61) =>
-  useQuery({
-    queryKey: ['team-stats', id, league],
-    queryFn: () => api.get(`/football/teams/${id}/statistics`, { params: { league } }).then(r => r.data),
-    enabled: !!id,
-    staleTime: 60 * 60 * 1000,
-  });
+  useQuery({ queryKey: ['team-stats', id, league], queryFn: () => get(`/football/teams/${id}/statistics`, { league }), enabled: !!id });
 
 export const useTeamSquad = (id) =>
-  useQuery({
-    queryKey: ['team-squad', id],
-    queryFn: () => api.get(`/football/teams/${id}/squad`).then(r => r.data),
-    enabled: !!id,
-    staleTime: 60 * 60 * 1000,
-  });
+  useQuery({ queryKey: ['squad', id], queryFn: () => get(`/football/teams/${id}/squad`), enabled: !!id });
 
 export const useSearch = (q) =>
   useQuery({
     queryKey: ['search', q],
+    enabled: q?.length >= 2,
     queryFn: async () => {
-      const [footballRes, articlesRes] = await Promise.allSettled([
-        api.get('/football/search', { params: { q } }).then(r => r.data),
-        api.get('/articles/search', { params: { q } }).then(r => r.data),
+      const [football, articles] = await Promise.allSettled([
+        get('/football/search', { q }),
+        get('/articles/search', { q }),
       ]);
       return {
-        players: footballRes.value?.players ?? [],
-        teams:   footballRes.value?.teams   ?? [],
-        articles: articlesRes.value ?? [],
+        players: football.value?.players ?? [],
+        teams: football.value?.teams ?? [],
+        articles: articles.value ?? [],
       };
     },
-    enabled: q?.length >= 2,
-    staleTime: 5 * 60 * 1000,
-    retry: 1,
   });
 
-// Articles hooks
-export const useArticles = (params = {}) => {
-  const { category, page = 1, limit = 20 } = params;
-  return useQuery({
-    queryKey: ['articles', category, page, limit],
-    queryFn: () => api.get('/articles', { params: { category, page, limit } }).then(r => r.data),
-    staleTime: 5 * 60 * 1000,
-  });
-};
+export const usePlayerSearch = (q) =>
+  useQuery({ queryKey: ['player-search', q], queryFn: () => get('/football/players/search', { q }), enabled: q?.length >= 2 });
+
+export const usePlayer = (id) =>
+  useQuery({ queryKey: ['player', id], queryFn: () => get(`/football/players/${id}`), enabled: !!id });
+
+/* ─── Articles ─────────────────────────────────────────────── */
+export const useArticles = ({ category, page = 1, limit = 20 } = {}) =>
+  useQuery({ queryKey: ['articles', category, page, limit], queryFn: () => get('/articles', { category, page, limit }) });
 
 export const useArticle = (slug) =>
-  useQuery({
-    queryKey: ['article', slug],
-    queryFn: () => api.get(`/articles/${slug}`).then(r => r.data),
-    enabled: !!slug,
-  });
+  useQuery({ queryKey: ['article', slug], queryFn: () => get(`/articles/${slug}`), enabled: !!slug });
 
-export const useCreateArticle = () => {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: (data) => api.post('/articles', data).then(r => r.data),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['articles'] }),
-  });
-};
-
-// Pronostics hook
+/* ─── Pronostics ───────────────────────────────────────────── */
 export const usePronostics = () =>
-  useQuery({ queryKey: ['pronostics'], queryFn: () => api.get('/pronostics').then(r => r.data) });
+  useQuery({ queryKey: ['pronostics'], queryFn: () => get('/pronostics') });
 
 export const useCreatePronostic = () => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (data) => api.post('/pronostics', data).then(r => r.data),
+    mutationFn: (data) => api.post('/pronostics', data).then((r) => r.data),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['pronostics'] }),
   });
 };
 
+/* ─── Actualités (RSS) ─────────────────────────────────────── */
 export const useTransferNews = () =>
-  useQuery({
-    queryKey: ['transfer-news'],
-    queryFn: () => api.get('/football/transfers/news').then(r => r.data),
-    staleTime: 10 * 60 * 1000,
-  });
+  useQuery({ queryKey: ['transfer-news'], queryFn: () => get('/football/transfers/news') });
 
 export const useNewsLatest = (limit = 24) =>
-  useQuery({
-    queryKey: ['news-latest', limit],
-    queryFn: () => api.get('/news/latest', { params: { limit } }).then(r => r.data),
-    staleTime: 5 * 60 * 1000,
-  });
-
-export const useNewsByCategory = (cat) =>
-  useQuery({
-    queryKey: ['news-category', cat],
-    queryFn: () => api.get(`/news/category/${cat}`).then(r => r.data),
-    enabled: !!cat,
-    staleTime: 5 * 60 * 1000,
-  });
-
-export const usePlayerSearch = (query) =>
-  useQuery({
-    queryKey: ['player-search', query],
-    queryFn: () => api.get('/football/players/search', { params: { q: query } }).then(r => r.data),
-    enabled: query?.length >= 2,
-    staleTime: 5 * 60 * 1000,
-  });
-
-export const usePlayer = (id) =>
-  useQuery({
-    queryKey: ['player', id],
-    queryFn: () => api.get(`/football/players/${id}`).then(r => r.data),
-    enabled: !!id,
-    staleTime: 5 * 60 * 1000,
-  });
+  useQuery({ queryKey: ['news', limit], queryFn: () => get('/news/latest', { limit }) });
