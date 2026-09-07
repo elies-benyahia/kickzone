@@ -1,3 +1,9 @@
+// ============================================================================
+//  Login — page de connexion publique (/connexion).
+//  login() vient du contexte d'authentification : il appelle l'API, stocke le
+//  jeton et met à jour l'utilisateur. On revient ensuite là où on voulait aller.
+// ============================================================================
+
 import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
@@ -5,9 +11,9 @@ import styles from './Auth.module.css';
 
 export default function Login() {
   const { login } = useAuth();
-  const navigate   = useNavigate();
-  const location   = useLocation();
-  const from       = location.state?.from || '/';
+  const navigate  = useNavigate();
+  const location  = useLocation();
+  const from      = location.state?.from || '/'; // page d'origine (sinon accueil)
 
   const [form, setForm]   = useState({ email: '', password: '' });
   const [error, setError] = useState('');
@@ -19,7 +25,7 @@ export default function Login() {
     setLoading(true);
     try {
       await login(form.email, form.password);
-      navigate(from, { replace: true });
+      navigate(from, { replace: true }); // replace : pas de retour arrière vers /connexion
     } catch (err) {
       setError(err.response?.data?.error || 'Identifiants invalides');
     } finally {

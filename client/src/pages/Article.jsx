@@ -1,3 +1,8 @@
+// ============================================================================
+//  Article — lecture d'un article (/article/:slug).
+//  Le slug est lu dans l'URL avec useParams(), puis passé au hook useArticle().
+// ============================================================================
+
 import { useParams } from 'react-router-dom';
 import { useArticle, useArticles } from '../hooks/api';
 import ArticleCard from '../components/ArticleCard';
@@ -52,9 +57,10 @@ function ShareButtons({ article }) {
 }
 
 export default function Article() {
-  const { slug } = useParams();
+  const { slug } = useParams();                          // ex : "officiel-gordon-barcelone-2026"
   const { data: article, isLoading } = useArticle(slug);
   const { data: recentsData } = useArticles({ limit: 6 });
+  // "À lire aussi" : 4 autres articles récents (on retire l'article courant).
   const recents = recentsData?.data?.filter(a => a.slug !== slug).slice(0, 4) ?? [];
 
   if (isLoading) return <div className={styles.loading}>Chargement...</div>;
@@ -86,6 +92,8 @@ export default function Article() {
           <h1 className={styles.title}>{article.title}</h1>
           {article.summary && <p className={styles.summary}>{article.summary}</p>}
 
+          {/* Le contenu est stocké en HTML dans la base -> on l'injecte tel quel.
+              (contenu écrit par la rédaction uniquement, via l'espace admin) */}
           {article.content && (
             <div className={styles.content} dangerouslySetInnerHTML={{ __html: article.content }} />
           )}

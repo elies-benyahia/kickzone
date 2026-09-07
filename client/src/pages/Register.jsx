@@ -1,3 +1,9 @@
+// ============================================================================
+//  Register — création de compte (/inscription).
+//  Vérifications côté client (mots de passe identiques, longueur) AVANT
+//  l'appel API. Le serveur revalide de toute façon (voir routes/auth.js).
+// ============================================================================
+
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
@@ -14,6 +20,7 @@ export default function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    // Contrôles rapides avant d'appeler le serveur.
     if (form.password !== form.confirm) { setError('Les mots de passe ne correspondent pas'); return; }
     if (form.password.length < 6) { setError('Mot de passe trop court (6 caractères minimum)'); return; }
     setLoading(true);

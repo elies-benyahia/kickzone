@@ -1,3 +1,8 @@
+// ============================================================================
+//  Profile — page "Mon profil" (/profil) : infos du compte, statistiques
+//  personnelles de pronostics, et la liste de MES pronostics.
+// ============================================================================
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
@@ -9,11 +14,13 @@ export default function Profile() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const { data: allPronos } = usePronostics();
+  // On filtre la liste complète pour ne garder que les pronos de l'utilisateur.
   const myPronos = (allPronos ?? []).filter(p => p.userId === user?.id);
 
+  // Statistiques calculées à partir de myPronos.
   const correct = myPronos.filter(p => p.result === 'CORRECT').length;
   const total   = myPronos.length;
-  const rate    = total > 0 ? Math.round(correct / total * 100) : 0;
+  const rate    = total > 0 ? Math.round(correct / total * 100) : 0; // taux de réussite en %
 
   const handleLogout = () => {
     logout();

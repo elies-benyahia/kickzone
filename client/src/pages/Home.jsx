@@ -1,15 +1,19 @@
+// ============================================================================
+//  Home — page d'accueil en 3 colonnes :
+//   - gauche  : matchs du jour des grandes ligues (LeftSidebar)
+//   - centre  : "Top News" (RSS) + grille d'actus + derniers pronos
+//   - droite  : encart mercato (RightSidebar)
+// ============================================================================
+
 import { Link } from 'react-router-dom';
 import { useFixturesToday, useArticles, useNewsLatest, usePronostics } from '../hooks/api';
 import MatchCard from '../components/MatchCard';
 import ArticleCard from '../components/ArticleCard';
 import PronoCard from '../components/PronoCard';
-import LiveBadge from '../components/LiveBadge';
 import styles from './Home.module.css';
 import { SIDEBAR_DEALS, FALLBACK_ARTICLES } from '../data/homeContent';
 
-const LIVE_STATUSES = ['1H','2H','HT','ET','P','LIVE','INT'];
-
-/* Ligues autorisées uniquement */
+// Ligues affichées dans la colonne de gauche (id API-Football).
 const ALLOWED_LEAGUES = new Set([
   2,   // UEFA Champions League
   3,   // UEFA Europa League
@@ -40,11 +44,14 @@ const ALLOWED_LEAGUES = new Set([
   33,  // World Cup Qualifying South America
 ]);
 
+// Colonne de gauche : matchs du jour, regroupés par compétition.
 function LeftSidebar({ fixtures }) {
-  if (!fixtures) return <SidebarSkeleton />;
+  if (!fixtures) return <SidebarSkeleton />; // données pas encore chargées
 
+  // On ne garde que les grandes ligues.
   const important = fixtures.filter(f => ALLOWED_LEAGUES.has(f.league.id));
 
+  // Regroupe les matchs par nom de compétition : { "Ligue 1": [...], ... }
   const grouped = {};
   important.forEach(f => {
     const name = f.league.name;
@@ -74,6 +81,7 @@ function LeftSidebar({ fixtures }) {
   );
 }
 
+// Colonne de droite : liste courte des gros transferts (données dans src/data/).
 function RightSidebar() {
   return (
     <aside className={styles.sidebar}>
@@ -94,6 +102,7 @@ function RightSidebar() {
   );
 }
 
+// Rectangles gris animés affichés pendant le chargement.
 function SidebarSkeleton() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -104,11 +113,13 @@ function SidebarSkeleton() {
   );
 }
 
+// Bloc "Top News" : 1 grande actu + 1 actu secondaire.
 function TopNewsHero({ articles }) {
   if (!articles || articles.length === 0) return null;
   const featured = articles[0];
   const side = articles[1];
 
+  // Lien interne si l'article vient de notre base (slug), lien externe sinon.
   const HeroLink = ({ article, children, className }) =>
     article.slug
       ? <Link to={`/article/${article.slug}`} className={className}>{children}</Link>
@@ -148,18 +159,20 @@ function TopNewsHero({ articles }) {
 }
 
 export default function Home() {
+  // 4 sources de données chargées en parallèle par React Query.
   const { data: fixtures }  = useFixturesToday();
   const { data: newsItems, isLoading: newsLoading } = useNewsLatest(20);
   const { data: articlesData } = useArticles({ limit: 8 });
   const { data: pronostics }   = usePronostics();
 
+  // On mélange actus RSS + articles de la base ; si tout est vide, on affiche des articles de secours.
   const rssNews    = newsItems ?? [];
   const dbArticles = articlesData?.data ?? [];
   const fetched    = [...rssNews, ...dbArticles].slice(0, 20);
   const allArticles = !newsLoading && fetched.length === 0 ? FALLBACK_ARTICLES : fetched;
 
-  const heroArticles = allArticles.slice(0, 2);
-  const gridArticles = allArticles.slice(2, 14);
+  const heroArticles = allArticles.slice(0, 2);   // les 2 pour le bloc "Top News"
+  const gridArticles = allArticles.slice(2, 14);  // les suivants pour la grille
 
   return (
     <div className={styles.layout}>

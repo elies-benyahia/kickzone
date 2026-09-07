@@ -1,12 +1,18 @@
+// ============================================================================
+//  Joueurs — champ de recherche de joueur avec suggestions.
+//  À chaque frappe, on interroge l'API (à partir de 2 lettres) et on propose
+//  une liste ; cliquer sur un joueur mène à sa fiche (/joueur/:id).
+// ============================================================================
+
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { usePlayerSearch } from '../hooks/api';
 import styles from './Joueurs.module.css';
 
 export default function Joueurs() {
-  const [query, setQuery] = useState('');
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  const { data: results, isLoading } = usePlayerSearch(query);
+  const [query, setQuery] = useState('');                       // texte tapé
+  const [showSuggestions, setShowSuggestions] = useState(false); // liste visible ?
+  const { data: results, isLoading } = usePlayerSearch(query);   // résultats de l'API
 
   return (
     <div className="container" style={{ padding: '2rem var(--gutter)', maxWidth: 700, margin: '0 auto' }}>
@@ -20,6 +26,7 @@ export default function Joueurs() {
           placeholder="Ex: Mbappé, Haaland, Bellingham..."
           value={query}
           onChange={e => { setQuery(e.target.value); setShowSuggestions(true); }}
+          // petit délai au blur : laisse le temps au clic sur une suggestion de se déclencher
           onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
           onFocus={() => setShowSuggestions(true)}
           autoComplete="off"

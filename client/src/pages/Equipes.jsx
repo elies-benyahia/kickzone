@@ -1,25 +1,31 @@
+// ============================================================================
+//  Equipes — fiche d'une équipe (/equipes/:id) : infos + 2 onglets
+//  (Effectif regroupé par poste, Statistiques de la saison).
+// ============================================================================
+
 import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useTeam, useTeamSquad, useTeamStats, useFixturesByDate } from '../hooks/api';
 import styles from './Equipes.module.css';
 
 const TABS = ['Effectif', 'Statistiques'];
-const POS_ORDER = ['G', 'D', 'M', 'F'];
-const POS_LABEL = { G:'Gardiens', D:'Défenseurs', M:'Milieux', F:'Attaquants' };
+const POS_ORDER = ['G', 'D', 'M', 'F'];                                  // ordre d'affichage des postes
+const POS_LABEL = { G: 'Gardiens', D: 'Défenseurs', M: 'Milieux', F: 'Attaquants' };
 
 export default function Equipes() {
   const { id } = useParams();
-  const [tab, setTab] = useState(0);
+  const [tab, setTab] = useState(0);            // 0 = Effectif, 1 = Statistiques
   const { data: teamData, isLoading } = useTeam(id);
   const { data: squadData } = useTeamSquad(id);
   const { data: statsData } = useTeamStats(id);
 
   const team = teamData?.[0]?.team;
-  const venue = teamData?.[0]?.venue;
+  const venue = teamData?.[0]?.venue;           // stade
 
   if (isLoading) return <div className={styles.loading}>Chargement...</div>;
   if (!team) return <div className={styles.loading}>Équipe introuvable.</div>;
 
+  // Regroupe les joueurs par poste (l'API renvoie "Goalkeeper", "Defender"...).
   const players = squadData?.[0]?.players ?? [];
   const byPos = {};
   POS_ORDER.forEach(p => byPos[p] = []);

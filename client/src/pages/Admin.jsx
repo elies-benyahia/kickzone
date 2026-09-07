@@ -1,13 +1,24 @@
+// ============================================================================
+//  Admin — tableau de bord de la rédaction (/admin).
+//  Deux onglets : gérer les Articles (créer / modifier / supprimer) et les
+//  Pronostics (créer, marquer le résultat). Accès réservé : au chargement,
+//  on redirige vers /admin/login s'il n'y a pas de jeton.
+//  Toutes les actions passent par l'API avec le jeton JWT (voir hooks/api.js).
+// ============================================================================
+
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api, useArticles, usePronostics } from '../hooks/api';
-import toast from 'react-hot-toast';
+import toast from 'react-hot-toast'; // notifications de succès / erreur
 import styles from './Admin.module.css';
 
-const CATEGORIES = ['TRANSFERT','ACTU','ANALYSE','INTERVIEW','RESULTATS'];
+const CATEGORIES = ['TRANSFERT', 'ACTU', 'ANALYSE', 'INTERVIEW', 'RESULTATS'];
 
+// Formulaire d'article, réutilisé pour la création ET la modification.
+// `initial` fourni -> mode modification (PUT), sinon création (POST).
 function ArticleForm({ onSaved, initial }) {
-  const [form, setForm] = useState({ title:'', summary:'', content:'', imageUrl:'', category:'ACTU', author:'', ...initial });
+  const [form, setForm] = useState({ title: '', summary: '', content: '', imageUrl: '', category: 'ACTU', author: '', ...initial });
+  // set('title') renvoie un gestionnaire onChange qui met à jour ce champ.
   const set = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }));
 
   const handleSubmit = async (e) => {
@@ -42,8 +53,9 @@ function ArticleForm({ onSaved, initial }) {
   );
 }
 
+// Formulaire de création d'un pronostic.
 function PronoForm({ onSaved }) {
-  const [form, setForm] = useState({ fixtureId:'', homeTeam:'', awayTeam:'', prediction:'', confidence:65, league:'Ligue 1', matchDate:'' });
+  const [form, setForm] = useState({ fixtureId: '', homeTeam: '', awayTeam: '', prediction: '', confidence: 65, league: 'Ligue 1', matchDate: '' });
   const set = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }));
 
   const handleSubmit = async (e) => {
@@ -75,25 +87,32 @@ function PronoForm({ onSaved }) {
 
 export default function Admin() {
   const navigate = useNavigate();
-  const [tab, setTab] = useState('articles');
-  const [editArticle, setEditArticle] = useState(null);
-  const [showForm, setShowForm] = useState(false);
+  const [tab, setTab] = useState('articles');          // onglet actif
+  const [editArticle, setEditArticle] = useState(null); // article en cours d'édition
+  const [showForm, setShowForm] = useState(false);      // formulaire de création visible ?
+  // refetch permet de recharger la liste après une création / suppression.
   const { data: articlesData, refetch: refetchArticles } = useArticles({ limit: 50 });
   const { data: pronostics, refetch: refetchPronos } = usePronostics();
   const articles = articlesData?.data ?? [];
 
+  // Garde d'accès : pas de jeton -> retour à la page de connexion admin.
   useEffect(() => {
     const token = localStorage.getItem('kz_token');
     if (!token) navigate('/admin/login');
   }, [navigate]);
 
   const logout = () => { localStorage.removeItem('kz_token'); navigate('/admin/login'); };
+
   const deleteArticle = async (id) => {
-    if (!window.confirm('Supprimer cet article ?')) return;
-    try { await api.delete(`/articles/${id}`); refetchArticles(); toast.success('Supprimé'); } catch { toast.error('Erreur'); }
+    if (!window.confirm('Supprimer cet article ?')) return; // confirmation
+    try { await api.delete(`/articles/${id}`); refetchArticles(); toast.success('Supprimé'); }
+    catch { toast.error('Erreur'); }
   };
+
+  // Marque un pronostic comme CORRECT ou RATE (valeurs de l'énum en base).
   const updatePronoResult = async (id, result) => {
-    try { await api.put(`/pronostics/${id}`, { result }); refetchPronos(); toast.success('Résultat mis à jour'); } catch { toast.error('Erreur'); }
+    try { await api.put(`/pronostics/${id}`, { result }); refetchPronos(); toast.success('Résultat mis à jour'); }
+    catch { toast.error('Erreur'); }
   };
 
   const TABS = [{key:'articles',label:'Articles'},{key:'pronos',label:'Pronostics'}];
@@ -162,7 +181,7 @@ export default function Admin() {
                     {!p.result && (
                       <>
                         <button className="btn" style={{fontSize:'0.78rem',padding:'4px 10px',background:'#dcfce7',color:'var(--green-live)'}} onClick={() => updatePronoResult(p.id, 'CORRECT')}>✅ Correct</button>
-                        <button className="btn" style={{fontSize:'0.78rem',padding:'4px 10px',background:'#fee2e2',color:'#dc2626'}} onClick={() => updatePronoResult(p.id, 'WRONG')}>❌ Raté</button>
+                        <button className="btn" style={{fontSize:'0.78rem',padding:'4px 10px',background:'#fee2e2',color:'#dc2626'}} onClick={() => updatePronoResult(p.id, 'RATE')}>❌ Raté</button>
                       </>
                     )}
                     {p.result && <span className={`badge ${p.result==='CORRECT'?'badge-green':'badge-gray'}`}>{p.result}</span>}

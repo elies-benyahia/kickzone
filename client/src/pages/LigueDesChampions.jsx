@@ -1,6 +1,7 @@
+// ============================================================================
 import { useState } from 'react';
 import { useStandings } from '../hooks/api';
-import { UCL_CALENDAR, UCL_TEAMS } from '../data/uclCalendar';
+import { UCL_CALENDAR, UCL_TEAMS } from '../data/uclCalendar'; // données dans src/data/
 import styles from './LigueDesChampions.module.css';
 
 /*

@@ -1,10 +1,16 @@
-/* Matches.jsx — OneFootball style redesign */
+// ============================================================================
+//  Matches — calendrier des matchs : un sélecteur de date (±10 jours) et un
+//  filtre par compétition. Les matchs sont regroupés par ligue.
+// ============================================================================
+
 import { useState, useRef, useEffect } from 'react';
 import { useFixturesByDate } from '../hooks/api';
 import MatchCard from '../components/MatchCard';
 import styles from './Matches.module.css';
 
+// Ligues affichées en premier (les autres passent après).
 const PRIORITY_LEAGUES = new Set([2, 3, 39, 61, 78, 135, 140]);
+// Onglets du filtre (null = toutes les compétitions).
 const LEAGUES = [
   { id: null,  label: 'Toutes' },
   { id: 2,     label: 'Champions League' },
@@ -16,20 +22,22 @@ const LEAGUES = [
   { id: 140,   label: 'La Liga' },
 ];
 
-const fmt = (d) => d.toISOString().split('T')[0];
+const fmt = (d) => d.toISOString().split('T')[0]; // Date -> "2026-09-08"
 
 export default function Matches() {
-  const [date, setDate]   = useState(new Date());
-  const [filter, setFilter] = useState(null);
+  const [date, setDate]   = useState(new Date()); // date sélectionnée
+  const [filter, setFilter] = useState(null);     // ligue filtrée (null = toutes)
   const dateStr = fmt(date);
-  const { data: fixtures, isLoading } = useFixturesByDate(dateStr);
+  const { data: fixtures, isLoading } = useFixturesByDate(dateStr); // recharge à chaque date
   const today = fmt(new Date());
   const todayBtnRef = useRef(null);
 
+  // Au chargement : fait défiler le sélecteur de dates pour centrer "aujourd'hui".
   useEffect(() => {
     todayBtnRef.current?.scrollIntoView({ inline: 'center', behavior: 'smooth', block: 'nearest' });
   }, []);
 
+  // Applique le filtre puis met les compétitions prioritaires en tête.
   const filtered = (fixtures ?? [])
     .filter(f => !filter || f.league.id === filter)
     .sort((a, b) => {
@@ -38,6 +46,7 @@ export default function Matches() {
       return pa - pb;
     });
 
+  // Regroupe les matchs par ligue : { [id]: { name, logo, matches: [...] } }
   const grouped = {};
   filtered.forEach(f => {
     const key = f.league.id;

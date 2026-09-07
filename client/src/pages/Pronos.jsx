@@ -1,3 +1,9 @@
+// ============================================================================
+//  Pronos — liste publique des pronostics + statistiques (taux de réussite).
+//  Un utilisateur connecté peut en publier un via la fenêtre <PronoForm/>.
+//  Un visiteur non connecté voit un bouton "Se connecter pour pronostiquer".
+// ============================================================================
+
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { usePronostics, useCreatePronostic } from '../hooks/api';
@@ -6,14 +12,17 @@ import PronoCard from '../components/PronoCard';
 import styles from './Pronos.module.css';
 import toast from 'react-hot-toast';
 
+// Onglets de filtre. "all" = tout, null = en attente de résultat.
 const FILTERS = [
-  { key: 'all',      label: 'Tous' },
+  { key: 'all',     label: 'Tous' },
   { key: 'CORRECT', label: '✅ Corrects' },
   { key: 'RATE',    label: '❌ Ratés' },
   { key: null,      label: '⏳ En attente' },
 ];
 
+// Fenêtre modale de création d'un pronostic.
 function PronoForm({ onClose }) {
+  // mutateAsync envoie le POST ; isPending = requête en cours.
   const { mutateAsync, isPending } = useCreatePronostic();
   const [form, setForm] = useState({
     homeTeam: '', awayTeam: '',
@@ -26,11 +35,13 @@ function PronoForm({ onClose }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // Champs minimum obligatoires avant l'envoi.
     if (!form.homeTeam || !form.awayTeam || !form.matchDate) {
       toast.error('Équipes et date requis');
       return;
     }
     try {
+      // On convertit les scores en nombre (ou null), le reste tel quel.
       await mutateAsync({
         homeTeam:   form.homeTeam,
         awayTeam:   form.awayTeam,
@@ -129,14 +140,16 @@ function PronoForm({ onClose }) {
 
 export default function Pronos() {
   const { data: pronostics, isLoading } = usePronostics();
-  const { user } = useAuth();
+  const { user } = useAuth();                 // pour afficher (ou non) le bouton "Nouveau prono"
   const [filter, setFilter] = useState('all');
   const [showForm, setShowForm] = useState(false);
 
+  // Statistiques globales de la communauté.
   const total   = pronostics?.length ?? 0;
   const correct = pronostics?.filter(p => p.result === 'CORRECT').length ?? 0;
   const rate    = total > 0 ? Math.round(correct / total * 100) : 0;
 
+  // Applique le filtre d'onglet.
   const filtered = (pronostics ?? []).filter(p => {
     if (filter === 'all') return true;
     if (filter === null) return p.result === 'EN_ATTENTE' || !p.result;

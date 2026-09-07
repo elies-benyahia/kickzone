@@ -1,9 +1,16 @@
+// ============================================================================
+//  Actu — grille d'articles de la rédaction, avec filtres par catégorie.
+//  Le 1er article (le plus récent) est mis en avant (FeaturedCard) quand
+//  aucun filtre n'est actif.
+// ============================================================================
+
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useArticles } from '../hooks/api';
 import ArticleCard from '../components/ArticleCard';
 import styles from './Actu.module.css';
 
+// Onglets de filtre. key = catégorie envoyée à l'API (null = toutes).
 const FILTERS = [
   { key: null,        label: 'Tous' },
   { key: 'TRANSFERT', label: 'Transferts' },
@@ -61,11 +68,11 @@ function FeaturedCard({ article }) {
 }
 
 export default function Actu() {
-  const [cat, setCat] = useState(null);
+  const [cat, setCat] = useState(null);                                   // filtre actif
   const { data: articlesData, isLoading } = useArticles({ category: cat, limit: 30 });
-  const articles = articlesData?.data ?? [];
-  const featured = articles[0];
-  const rest = articles.slice(1);
+  const articles = articlesData?.data ?? []; // l'API renvoie { data, meta }
+  const featured = articles[0];              // article mis en avant
+  const rest = articles.slice(1);            // le reste de la grille
 
   return (
     <div className="container" style={{padding:'1.5rem var(--gutter)'}}>

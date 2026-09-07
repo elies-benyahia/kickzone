@@ -1,3 +1,10 @@
+// ============================================================================
+//  Match — page détail d'un match (/match/:id) avec 5 onglets :
+//  Résumé, Composition, Statistiques, H2H (confrontations), Classement.
+//  Optimisation : les données d'un onglet ne sont chargées QUE lorsqu'il est
+//  ouvert (on passe null au hook tant que l'onglet n'est pas sélectionné).
+// ============================================================================
+
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useFixture, useLineups, useFixtureStats, useFixtureEvents, useH2H, useStandings } from '../hooks/api';
@@ -5,14 +12,14 @@ import LiveBadge from '../components/LiveBadge';
 import StandingsTable from '../components/StandingsTable';
 import styles from './Match.module.css';
 
-const LIVE_STATUSES = ['1H','2H','HT','ET','P','LIVE','INT'];
-const TABS = ['Résumé','Composition','Statistiques','H2H','Classement'];
+const LIVE_STATUSES = ['1H', '2H', 'HT', 'ET', 'P', 'LIVE', 'INT'];
+const TABS = ['Résumé', 'Composition', 'Statistiques', 'H2H', 'Classement'];
 
 export default function Match() {
-  const { id } = useParams();
-  const [tab, setTab] = useState(0);
+  const { id } = useParams();                       // id du match dans l'URL
+  const [tab, setTab] = useState(0);                // onglet actif (0 = Résumé)
   const { data: fixtures, isLoading } = useFixture(id);
-  const fixture = fixtures?.[0];
+  const fixture = fixtures?.[0];                    // l'API renvoie un tableau d'1 élément
 
   const homeId   = fixture?.teams?.home?.id;
   const awayId   = fixture?.teams?.away?.id;
@@ -20,11 +27,12 @@ export default function Match() {
   const status   = fixture?.fixture?.status?.short;
   const isLive   = LIVE_STATUSES.includes(status);
 
-  const { data: events }    = useFixtureEvents(id);
-  const { data: lineups }   = useLineups(tab === 1 ? id : null);
-  const { data: stats }     = useFixtureStats(tab === 2 ? id : null);
+  // Chargements conditionnels : chaque hook ne part que si son onglet est ouvert.
+  const { data: events }    = useFixtureEvents(id);                                   // toujours (pour le résumé)
+  const { data: lineups }   = useLineups(tab === 1 ? id : null);                      // onglet Composition
+  const { data: stats }     = useFixtureStats(tab === 2 ? id : null);                 // onglet Statistiques
   const { data: h2h }       = useH2H(tab === 3 && homeId ? homeId : null, tab === 3 && awayId ? awayId : null);
-  const { data: standings } = useStandings(tab === 4 && leagueId ? leagueId : null);
+  const { data: standings } = useStandings(tab === 4 && leagueId ? leagueId : null);  // onglet Classement
 
   if (isLoading) return <div className={styles.loading}>Chargement du match...</div>;
   if (!fixture)  return <div className={styles.loading}>Match introuvable.</div>;
@@ -79,6 +87,7 @@ export default function Match() {
         ))}
       </div>
 
+      {/* Contenu : on n'affiche que le sous-composant de l'onglet actif */}
       <div className={styles.content}>
         {tab === 0 && <SummaryTab events={events} fixture={fixture} />}
         {tab === 1 && <LineupsTab lineups={lineups} />}
@@ -91,6 +100,7 @@ export default function Match() {
 }
 
 /* ---------- SUMMARY TAB ---------- */
+// Onglet Résumé : timeline des événements (buts, cartons) + infos du match.
 function SummaryTab({ events, fixture }) {
   const allEvents = events ?? fixture?.events ?? [];
   if (allEvents.length === 0) {
@@ -147,6 +157,7 @@ const POSITIONS = {
   },
 };
 
+// Terrain de foot en CSS : place les joueurs selon leur position dans la grille.
 function FootballPitch({ players, formation, isHome }) {
   const byPos = { G: [], D: [], M: [], F: [] };
   players.forEach(p => {
@@ -183,6 +194,7 @@ function FootballPitch({ players, formation, isHome }) {
   );
 }
 
+// Onglet Composition : les deux "onze" de départ sur un terrain + les remplaçants.
 function LineupsTab({ lineups }) {
   const [view, setView] = useState('terrain');
   if (!lineups || lineups.length === 0) return (
@@ -261,6 +273,7 @@ function LineupsTab({ lineups }) {
 }
 
 /* ---------- STATS TAB ---------- */
+// Onglet Statistiques : possession, tirs, corners... barre comparative des 2 équipes.
 function StatsTab({ stats, teams }) {
   if (!stats || stats.length === 0) return (
     <p style={{color:'var(--text-muted)',padding:'2rem',textAlign:'center'}}>Statistiques non disponibles.</p>
@@ -309,6 +322,7 @@ function StatsTab({ stats, teams }) {
 }
 
 /* ---------- H2H TAB ---------- */
+// Onglet H2H : les 10 dernières confrontations entre les deux équipes.
 function H2HTab({ h2h, homeId }) {
   if (!h2h || h2h.length === 0) return (
     <p style={{color:'var(--text-muted)',padding:'2rem',textAlign:'center'}}>Historique H2H indisponible.</p>
@@ -343,6 +357,7 @@ function H2HTab({ h2h, homeId }) {
 }
 
 /* ---------- STANDINGS TAB ---------- */
+// Onglet Classement : le classement de la compétition, les 2 équipes surlignées.
 function StandingsTab({ standings, homeId, awayId }) {
   return <StandingsTable standings={standings} highlightIds={[homeId, awayId]} />;
 }

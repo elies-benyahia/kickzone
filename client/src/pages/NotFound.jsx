@@ -1,3 +1,8 @@
+// ============================================================================
+//  NotFound — page affichée quand l'URL ne correspond à aucune route (404).
+//  Déclarée en dernier dans App.jsx avec path="*".
+// ============================================================================
+
 import { Link } from 'react-router-dom';
 import styles from './NotFound.module.css';
 

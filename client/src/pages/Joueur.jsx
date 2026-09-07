@@ -1,19 +1,26 @@
+// ============================================================================
+//  Joueur — fiche d'un joueur (/joueur/:id) : profil, stats de la saison,
+//  historique des transferts, palmarès. Données via usePlayer(id).
+// ============================================================================
+
 import { useParams, Link } from 'react-router-dom';
 import { usePlayer } from '../hooks/api';
 import styles from './Joueur.module.css';
 
+// Formatage : nombre à la française (12 345) et date longue.
 const fmt = (v) => v ? new Intl.NumberFormat('fr-FR').format(v) : '—';
 const fmtDate = (d) => d ? new Date(d).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) : '—';
 
 export default function Joueur() {
-  const { id } = useParams();
+  const { id } = useParams();                 // id du joueur dans l'URL
   const { data, isLoading } = usePlayer(id);
 
   if (isLoading) return <div className={styles.loading}>Chargement...</div>;
   if (!data?.player) return <div className={styles.loading}>Joueur introuvable.</div>;
 
+  // L'API imbrique les données : on extrait le joueur `p`, ses stats, transferts, trophées.
   const { player: { player: p, statistics }, transfers, trophies } = data;
-  const stats = statistics?.[0] ?? {};
+  const stats = statistics?.[0] ?? {};        // stats de la 1re compétition
   const team = stats.team ?? {};
   const league = stats.league ?? {};
 

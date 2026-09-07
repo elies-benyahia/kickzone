@@ -1,3 +1,8 @@
+// ============================================================================
+//  AdminLogin — formulaire de connexion de l'espace d'administration (/admin/login).
+//  En cas de succès : on stocke le jeton JWT et on redirige vers /admin.
+// ============================================================================
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../hooks/api';
@@ -11,15 +16,17 @@ export default function AdminLogin() {
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault();          // empêche le rechargement de la page
     setLoading(true); setError('');
     try {
       const { data } = await api.post('/auth/login', { email, password });
-      localStorage.setItem('kz_token', data.token);
-      navigate('/admin');
+      localStorage.setItem('kz_token', data.token); // mémorise le jeton
+      navigate('/admin');                            // va au tableau de bord
     } catch {
       setError('Email ou mot de passe incorrect.');
-    } finally { setLoading(false); }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -36,7 +43,7 @@ export default function AdminLogin() {
           <label>Mot de passe</label>
           <input type="password" value={password} onChange={e => setPassword(e.target.value)} required />
         </div>
-        <button type="submit" className="btn btn-primary" style={{width:'100%'}} disabled={loading}>
+        <button type="submit" className="btn btn-primary" style={{ width: '100%' }} disabled={loading}>
           {loading ? 'Connexion...' : 'Se connecter'}
         </button>
       </form>

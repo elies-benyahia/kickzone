@@ -1,12 +1,21 @@
+// ============================================================================
+//  Transferts — page mercato :
+//   - un bandeau de brèves RSS en direct
+//   - des statistiques (nb officiels, rumeurs, volume total en M€)
+//   - la liste des transferts (données dans src/data/transfers.js), filtrable
+//   - les articles "TRANSFERT" de la rédaction
+// ============================================================================
+
 import { useState } from 'react';
 import { useArticles, useTransferNews } from '../hooks/api';
 import ArticleCard from '../components/ArticleCard';
 import { DEALS } from '../data/transfers';
 import styles from './Transferts.module.css';
 
-
+// Carte d'un transfert : photo (ou initiales si l'image échoue), badge, infos.
 function PlayerCard({ deal }) {
   const [imgError, setImgError] = useState(false);
+  // Initiales de secours : "Enzo Fernández" -> "EF"
   const initial = deal.player.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
 
   return (
@@ -52,11 +61,12 @@ function PlayerCard({ deal }) {
 }
 
 export default function Transferts() {
-  const [search, setSearch] = useState('');
-  const { data: articlesData } = useArticles({ category: 'TRANSFERT', limit: 20 });
-  const { data: news, isLoading: newsLoading } = useTransferNews();
+  const [search, setSearch] = useState('');                                    // texte de recherche
+  const { data: articlesData } = useArticles({ category: 'TRANSFERT', limit: 20 }); // articles de la base
+  const { data: news, isLoading: newsLoading } = useTransferNews();            // brèves RSS
   const articles = articlesData?.data ?? [];
 
+  // Filtre la liste des transferts sur le nom du joueur ou d'un des deux clubs.
   const filtered = DEALS.filter(d =>
     d.player.toLowerCase().includes(search.toLowerCase()) ||
     d.from.toLowerCase().includes(search.toLowerCase()) ||
@@ -110,6 +120,7 @@ export default function Transferts() {
               <span className={styles.statLabel}>Rumeurs à suivre</span>
             </div>
             <div className={styles.statBox}>
+              {/* Somme des montants : on ignore "Libre" et les montants estimés "~90M€" */}
               <span className={styles.statNum}>
                 {DEALS.filter(d => d.official && d.fee !== 'Libre' && !d.fee.includes('~')).reduce((acc, d) => acc + parseInt(d.fee), 0)}M€
               </span>
