@@ -29,13 +29,14 @@ Projet réalisé dans le cadre du titre professionnel **DWWM (Développeur Web e
 ├── client/                    # React 19 + Vite (SPA)
 │   └── src/
 │       ├── components/        # Navbar, MatchTicker, MatchCard, ArticleCard, StandingsTable, LiveBadge, PronoCard
-│       ├── pages/             # Home, Matches, Match, Transferts, Actu, Article, Classements, Pronos, Admin, AdminLogin
-│       ├── styles/            # globals.css — design system football bleu/blanc
-│       └── hooks/             # api.js (React Query + axios vers /api)
+│       ├── pages/             # Home, Matches, Match, Transferts, Actu, Article, Classements, LigueDesChampions, Pronos, Admin…
+│       ├── data/              # listes statiques (transferts, calendrier C1, contenus d'accueil)
+│       ├── styles/            # globals.css — design system football sombre
+│       └── hooks/             # api.js (un client axios + tous les hooks React Query)
 ├── server/                    # Express API (REST)
 │   ├── controllers/           # articleController, footballController, pronosticController, authController
-│   ├── services/              # articleService, footballService, pronosticService, authService
-│   ├── routes/                # articles, football, pronostics, auth
+│   ├── services/              # articleService, footballService, pronosticService, authService, rssService, cacheService
+│   ├── routes/                # articles, football, pronostics, auth, news
 │   ├── middlewares/           # auth (JWT), validate (express-validator), rateLimit
 │   ├── config/db.js           # adaptateur SQLite (API compatible mysql2)
 │   ├── database/              # schema.sql (référence), init.js, seed.js, kickzone.db
