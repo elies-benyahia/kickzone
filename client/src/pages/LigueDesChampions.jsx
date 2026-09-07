@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useStandings } from '../hooks/api';
-import { UCL_CALENDAR } from '../data/uclCalendar';
+import { UCL_CALENDAR, UCL_TEAMS } from '../data/uclCalendar';
 import styles from './LigueDesChampions.module.css';
 
 /*
@@ -17,49 +17,9 @@ import styles from './LigueDesChampions.module.css';
 
 const SEASON = '2026/2027';
 
-// 36 équipes engagées en 2026/2027 (ordre alphabétique, comme l'affiche l'UEFA
-// avant le coup d'envoi). Chaque entrée : [nom, pays].
-const TEAMS = [
-  ['AEK Athènes', 'GRE'],
-  ['Arsenal', 'ANG'],
-  ['Aston Villa', 'ANG'],
-  ['Atlético de Madrid', 'ESP'],
-  ['Borussia Dortmund', 'ALL'],
-  ['FC Barcelone', 'ESP'],
-  ['Bayern Munich', 'ALL'],
-  ['Bodø/Glimt', 'NOR'],
-  ['Club Brugge', 'BEL'],
-  ['Côme', 'ITA'],
-  ['Fenerbahçe', 'TUR'],
-  ['Feyenoord', 'P-B'],
-  ['Galatasaray', 'TUR'],
-  ['Inter Milan', 'ITA'],
-  ['LASK', 'AUT'],
-  ['RB Leipzig', 'ALL'],
-  ['RC Lens', 'FRA'],
-  ['LOSC Lille', 'FRA'],
-  ['Liverpool', 'ANG'],
-  ['Manchester City', 'ANG'],
-  ['Manchester United', 'ANG'],
-  ['Napoli', 'ITA'],
-  ['Paris Saint-Germain', 'FRA'],
-  ['FC Porto', 'POR'],
-  ['PSV Eindhoven', 'P-B'],
-  ['Real Betis', 'ESP'],
-  ['Real Madrid', 'ESP'],
-  ['AS Roma', 'ITA'],
-  ['Slovan Bratislava', 'SVK'],
-  ['Sabah FC', 'AZE'],
-  ['Shakhtar Donetsk', 'UKR'],
-  ['Slavia Prague', 'CZE'],
-  ['Sporting CP', 'POR'],
-  ['VfB Stuttgart', 'ALL'],
-  ['Viking FK', 'NOR'],
-  ['Villarreal', 'ESP'],
-];
 
 function demoStandings() {
-  const rows = TEAMS.map(([name, country], i) => ({
+  const rows = UCL_TEAMS.map(([name, country], i) => ({
     rank: i + 1,
     team: { id: `demo-${i}`, name, country, logo: null },
     points: 0,

@@ -269,3 +269,16 @@ export const UCL_CALENDAR = [
     ],
   },
 ];
+
+// 36 équipes engagées en 2026/2027 (ordre alphabétique). [nom, pays]
+export const UCL_TEAMS = [
+  ['AEK Athènes', 'GRE'], ['Arsenal', 'ANG'], ['Aston Villa', 'ANG'], ['Atlético de Madrid', 'ESP'],
+  ['Borussia Dortmund', 'ALL'], ['FC Barcelone', 'ESP'], ['Bayern Munich', 'ALL'], ['Bodø/Glimt', 'NOR'],
+  ['Club Brugge', 'BEL'], ['Côme', 'ITA'], ['Fenerbahçe', 'TUR'], ['Feyenoord', 'P-B'],
+  ['Galatasaray', 'TUR'], ['Inter Milan', 'ITA'], ['LASK', 'AUT'], ['RB Leipzig', 'ALL'],
+  ['RC Lens', 'FRA'], ['LOSC Lille', 'FRA'], ['Liverpool', 'ANG'], ['Manchester City', 'ANG'],
+  ['Manchester United', 'ANG'], ['Napoli', 'ITA'], ['Paris Saint-Germain', 'FRA'], ['FC Porto', 'POR'],
+  ['PSV Eindhoven', 'P-B'], ['Real Betis', 'ESP'], ['Real Madrid', 'ESP'], ['AS Roma', 'ITA'],
+  ['Slovan Bratislava', 'SVK'], ['Sabah FC', 'AZE'], ['Shakhtar Donetsk', 'UKR'], ['Slavia Prague', 'CZE'],
+  ['Sporting CP', 'POR'], ['VfB Stuttgart', 'ALL'], ['Viking FK', 'NOR'], ['Villarreal', 'ESP'],
+];

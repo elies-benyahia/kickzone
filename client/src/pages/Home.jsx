@@ -5,6 +5,7 @@ import ArticleCard from '../components/ArticleCard';
 import PronoCard from '../components/PronoCard';
 import LiveBadge from '../components/LiveBadge';
 import styles from './Home.module.css';
+import { SIDEBAR_DEALS, FALLBACK_ARTICLES } from '../data/homeContent';
 
 const LIVE_STATUSES = ['1H','2H','HT','ET','P','LIVE','INT'];
 
@@ -72,16 +73,6 @@ function LeftSidebar({ fixtures }) {
     </aside>
   );
 }
-
-const SIDEBAR_DEALS = [
-  { player: 'Anthony Gordon',  from: 'Newcastle', to: 'Barcelone',  fee: '80M€',   official: true },
-  { player: 'Marc Cucurella',  from: 'Chelsea',   to: 'Real Madrid',fee: '55M€',   official: true },
-  { player: 'Bernardo Silva',  from: 'Man City',  to: 'Real Madrid',fee: 'Libre',  official: true },
-  { player: 'J. Jacquet',      from: 'Rennes',    to: 'Liverpool',  fee: '60M€',   official: true },
-  { player: 'G. Quenda',       from: 'Sporting',  to: 'Chelsea',    fee: '52M€',   official: true },
-  { player: 'Piero Hincapié',  from: 'Leverkusen',to: 'Arsenal',    fee: '35M€',   official: true },
-  { player: 'Yan Diomandé',    from: 'Leipzig',   to: 'PSG',        fee: '~100M€', official: false },
-];
 
 function RightSidebar() {
   return (
@@ -155,13 +146,6 @@ function TopNewsHero({ articles }) {
     </div>
   );
 }
-
-const FALLBACK_ARTICLES = [
-  { id: 'f1', title: 'Ligue des Champions : soirée européenne pleine de promesses pour les clubs français', link: 'https://www.lequipe.fr', sourceName: "L'Équipe", imageUrl: null, publishedAt: new Date() },
-  { id: 'f2', title: 'Mercato : les plus grands transferts de l\'été 2026 décryptés', link: 'https://www.footmercato.net', sourceName: 'Foot Mercato', imageUrl: null, publishedAt: new Date() },
-  { id: 'f3', title: 'Équipe de France : les convoqués pour le Mondial et les enjeux tactiques', link: 'https://rmcsport.bfmtv.com', sourceName: 'RMC Sport', imageUrl: null, publishedAt: new Date() },
-  { id: 'f4', title: 'Champions League : le tirage au sort de la saison 2026-27 dévoilé', link: 'https://www.eurosport.fr', sourceName: 'Eurosport', imageUrl: null, publishedAt: new Date() },
-];
 
 export default function Home() {
   const { data: fixtures }  = useFixturesToday();
