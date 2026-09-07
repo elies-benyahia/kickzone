@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import { useStandings } from '../hooks/api';
+import { UCL_CALENDAR } from '../data/uclCalendar';
 import styles from './LigueDesChampions.module.css';
 
 /*
@@ -76,10 +78,14 @@ const zoneOf = (rank) => {
 
 export default function LigueDesChampions() {
   const { data, isLoading } = useStandings(2);
+  const [view, setView] = useState('classement');
+  const [md, setMd] = useState(1);
 
   const apiTable = data?.[0]?.league?.standings?.[0];
   const usingReal = Array.isArray(apiTable) && apiTable.length >= 24;
   const table = usingReal ? apiTable : demoStandings()[0].league.standings[0];
+
+  const matchday = UCL_CALENDAR.find((j) => j.md === md);
 
   return (
     <div className="container" style={{ padding: '1.5rem var(--gutter)' }}>
@@ -88,6 +94,52 @@ export default function LigueDesChampions() {
         <span className={styles.season}>Phase de ligue — saison {SEASON}</span>
       </header>
 
+      <div className={styles.viewTabs}>
+        <button
+          className={`${styles.viewTab} ${view === 'classement' ? styles.viewActive : ''}`}
+          onClick={() => setView('classement')}
+        >
+          Classement
+        </button>
+        <button
+          className={`${styles.viewTab} ${view === 'calendrier' ? styles.viewActive : ''}`}
+          onClick={() => setView('calendrier')}
+        >
+          Calendrier
+        </button>
+      </div>
+
+      {view === 'calendrier' ? (
+        <div className={styles.calendar}>
+          <div className={styles.mdBar}>
+            {UCL_CALENDAR.map((j) => (
+              <button
+                key={j.md}
+                className={`${styles.mdChip} ${md === j.md ? styles.mdActive : ''}`}
+                onClick={() => setMd(j.md)}
+              >
+                J{j.md}
+              </button>
+            ))}
+          </div>
+
+          {matchday.days.map((day) => (
+            <div key={day.d} className={styles.calDay}>
+              <h3 className={styles.calDate}>{day.d}</h3>
+              <ul className={styles.calList}>
+                {day.m.map(([home, away, time], i) => (
+                  <li key={i} className={styles.calMatch}>
+                    <span className={styles.calHome}>{home}</span>
+                    <span className={styles.calTime}>{time}</span>
+                    <span className={styles.calAway}>{away}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      ) : (
+      <>
       <p className={styles.intro}>
         Depuis 2024/2025, la Ligue des Champions se joue avec <strong>36 équipes</strong> dans
         un <strong>classement unique</strong>. Chaque club dispute 8 matchs. À l'issue de la
@@ -163,6 +215,8 @@ export default function LigueDesChampions() {
             <span><i className={styles.dotOut} />25–36 · Éliminés</span>
           </div>
         </div>
+      )}
+      </>
       )}
     </div>
   );

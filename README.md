@@ -150,7 +150,8 @@ Cache en mémoire : 5 min par défaut, 30 min pour les classements.
 | `/actu` | Grille d'articles avec filtres catégories |
 | `/article/:slug` | Lecture article |
 | `/classements` | Classements Ligue 1, PL, Liga, BL, Serie A, UCL |
-| `/pronos` | Pronostics admin publics + taux de réussite |
+| `/ligue-des-champions` | Phase de ligue C1 2026/2027 : classement 36 équipes + calendrier des 8 journées |
+| `/pronos` | Pronostics des utilisateurs connectés + taux de réussite |
 | `/admin` | Dashboard : gestion articles + pronostics |
 | `/admin/login` | Connexion admin |
 
