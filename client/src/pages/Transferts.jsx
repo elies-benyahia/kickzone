@@ -3,56 +3,9 @@
 import { useState } from 'react';
 import { useArticles, useTransferNews } from '../hooks/api';
 import ArticleCard from '../components/ArticleCard';
+import PlayerCard from '../components/PlayerCard';
 import { DEALS } from '../data/transfers';
 import styles from './Transferts.module.css';
-
-// Carte d'un transfert : photo (ou initiales si l'image échoue), badge, infos.
-function PlayerCard({ deal }) {
-  const [imgError, setImgError] = useState(false);
-  // Initiales de secours : "Enzo Fernández" -> "EF"
-  const initial = deal.player.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
-
-  return (
-    <article className={styles.dealCard}>
-      <div className={styles.dealImgWrap}>
-        {!imgError ? (
-          <img
-            src={deal.image}
-            alt={deal.player}
-            className={styles.dealImg}
-            onError={() => setImgError(true)}
-          />
-        ) : (
-          <div className={styles.dealImgFallback}>{initial}</div>
-        )}
-        <span className={`${styles.dealBadge} ${deal.official ? styles.dealDone : styles.dealPending}`}>
-          {deal.official ? 'Officiel' : 'Rumeur'}
-        </span>
-      </div>
-
-      <div className={styles.dealBody}>
-        <div className={styles.dealHeader}>
-          <span className={styles.dealFlag}>{deal.flag}</span>
-          <span className={styles.dealDate}>{deal.date}</span>
-          <span className={styles.dealPos}>{deal.position}</span>
-        </div>
-
-        <h3 className={styles.dealPlayer}>{deal.player}</h3>
-        <p className={styles.dealNat}>{deal.nationality} · {deal.age} ans</p>
-
-        <div className={styles.dealTransfer}>
-          <span className={styles.dealFrom}>{deal.from}</span>
-          <span className={styles.dealArrow}>→</span>
-          <span className={styles.dealTo}>{deal.to}</span>
-        </div>
-
-        <div className={styles.dealFee}>{deal.fee}</div>
-
-        <p className={styles.dealDesc}>{deal.desc}</p>
-      </div>
-    </article>
-  );
-}
 
 export default function Transferts() {
   const [search, setSearch] = useState('');                                    // texte de recherche

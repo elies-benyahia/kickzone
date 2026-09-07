@@ -1,12 +1,13 @@
 // Pronos — liste publique des pronostics + statistiques (taux de réussite).
+// Le formulaire de création est dans components/PronoForm.jsx.
 
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { usePronostics, useCreatePronostic } from '../hooks/api';
+import { usePronostics } from '../hooks/api';
 import { useAuth } from '../contexts/AuthContext';
 import PronoCard from '../components/PronoCard';
+import PronoForm from '../components/PronoForm';
 import styles from './Pronos.module.css';
-import toast from 'react-hot-toast';
 
 // Onglets de filtre. "all" = tout, null = en attente de résultat.
 const FILTERS = [
@@ -15,124 +16,6 @@ const FILTERS = [
   { key: 'RATE',    label: '❌ Ratés' },
   { key: null,      label: '⏳ En attente' },
 ];
-
-// Fenêtre modale de création d'un pronostic.
-function PronoForm({ onClose }) {
-  // mutateAsync envoie le POST ; isPending = requête en cours.
-  const { mutateAsync, isPending } = useCreatePronostic();
-  const [form, setForm] = useState({
-    homeTeam: '', awayTeam: '',
-    scoreHome: '', scoreAway: '',
-    prediction: '', confidence: 65,
-    league: '', matchDate: '', author: '',
-  });
-
-  const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    // Champs minimum obligatoires avant l'envoi.
-    if (!form.homeTeam || !form.awayTeam || !form.matchDate) {
-      toast.error('Équipes et date requis');
-      return;
-    }
-    try {
-      // On convertit les scores en nombre (ou null), le reste tel quel.
-      await mutateAsync({
-        homeTeam:   form.homeTeam,
-        awayTeam:   form.awayTeam,
-        scoreHome:  form.scoreHome !== '' ? Number(form.scoreHome) : null,
-        scoreAway:  form.scoreAway !== '' ? Number(form.scoreAway) : null,
-        prediction: form.prediction || `${form.homeTeam} vs ${form.awayTeam}`,
-        confidence: Number(form.confidence),
-        league:     form.league || null,
-        matchDate:  form.matchDate,
-        author:     form.author || 'Anonyme',
-      });
-      toast.success('Pronostic publié !');
-      onClose();
-    } catch (err) {
-      toast.error(err.response?.data?.error || 'Erreur lors de la création');
-    }
-  };
-
-  return (
-    <div className={styles.formOverlay} onClick={e => e.target === e.currentTarget && onClose()}>
-      <div className={styles.formCard}>
-        <div className={styles.formHeader}>
-          <h2>Nouveau pronostic</h2>
-          <button className={styles.closeBtn} onClick={onClose}>✕</button>
-        </div>
-
-        <form onSubmit={handleSubmit} className={styles.form}>
-          <div className={styles.field}>
-            <label>Ton pseudo (optionnel)</label>
-            <input value={form.author} onChange={e => set('author', e.target.value)}
-              placeholder="Anonyme" className={styles.input} />
-          </div>
-
-          <div className={styles.matchRow}>
-            <div className={styles.teamInput}>
-              <label>Équipe domicile</label>
-              <input value={form.homeTeam} onChange={e => set('homeTeam', e.target.value)}
-                placeholder="France" required className={styles.input} />
-            </div>
-            <div className={styles.scoreInputs}>
-              <div className={styles.scoreBox}>
-                <input type="number" min="0" max="30"
-                  value={form.scoreHome} onChange={e => set('scoreHome', e.target.value)}
-                  placeholder="—" className={styles.scoreInput} />
-              </div>
-              <span className={styles.scoreSep}>-</span>
-              <div className={styles.scoreBox}>
-                <input type="number" min="0" max="30"
-                  value={form.scoreAway} onChange={e => set('scoreAway', e.target.value)}
-                  placeholder="—" className={styles.scoreInput} />
-              </div>
-            </div>
-            <div className={styles.teamInput} style={{ textAlign: 'right' }}>
-              <label>Équipe extérieur</label>
-              <input value={form.awayTeam} onChange={e => set('awayTeam', e.target.value)}
-                placeholder="Espagne" required className={styles.input} />
-            </div>
-          </div>
-
-          <div className={styles.formGrid}>
-            <div className={styles.field}>
-              <label>Compétition</label>
-              <input value={form.league} onChange={e => set('league', e.target.value)}
-                placeholder="World Cup" className={styles.input} />
-            </div>
-            <div className={styles.field}>
-              <label>Date du match</label>
-              <input type="datetime-local" value={form.matchDate} onChange={e => set('matchDate', e.target.value)}
-                required className={styles.input} />
-            </div>
-          </div>
-
-          <div className={styles.field}>
-            <label>Analyse / Commentaire (optionnel)</label>
-            <textarea value={form.prediction} onChange={e => set('prediction', e.target.value)}
-              placeholder="Explique ton pronostic..." rows={3} className={styles.textarea} />
-          </div>
-
-          <div className={styles.field}>
-            <label>Confiance : <strong>{form.confidence}%</strong></label>
-            <input type="range" min="10" max="99" value={form.confidence}
-              onChange={e => set('confidence', e.target.value)} className={styles.range} />
-          </div>
-
-          <div className={styles.formActions}>
-            <button type="button" className={styles.cancelBtn} onClick={onClose}>Annuler</button>
-            <button type="submit" className={styles.submitBtn} disabled={isPending}>
-              {isPending ? 'Enregistrement...' : 'Publier mon prono'}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
-}
 
 export default function Pronos() {
   const { data: pronostics, isLoading } = usePronostics();

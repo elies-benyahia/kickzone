@@ -1,83 +1,13 @@
 // Admin — tableau de bord de la rédaction (/admin).
+// Les 2 formulaires sont dans components/admin/.
 
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api, useArticles, usePronostics } from '../hooks/api';
-import toast from 'react-hot-toast'; // notifications de succès / erreur
+import toast from 'react-hot-toast';
+import ArticleForm from '../components/admin/ArticleForm';
+import AdminPronoForm from '../components/admin/AdminPronoForm';
 import styles from './Admin.module.css';
-
-const CATEGORIES = ['TRANSFERT', 'ACTU', 'ANALYSE', 'INTERVIEW', 'RESULTATS'];
-
-// Formulaire d'article, réutilisé pour la création ET la modification.
-// `initial` fourni -> mode modification (PUT), sinon création (POST).
-function ArticleForm({ onSaved, initial }) {
-  const [form, setForm] = useState({ title: '', summary: '', content: '', imageUrl: '', category: 'ACTU', author: '', ...initial });
-  // set('title') renvoie un gestionnaire onChange qui met à jour ce champ.
-  const set = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }));
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      if (initial?.id) await api.put(`/articles/${initial.id}`, form);
-      else await api.post('/articles', form);
-      toast.success(initial?.id ? 'Article modifié' : 'Article créé');
-      onSaved();
-    } catch { toast.error('Erreur lors de la sauvegarde'); }
-  };
-
-  return (
-    <form className={styles.form} onSubmit={handleSubmit}>
-      <div className={styles.formRow}>
-        <div className={styles.field}><label>Titre *</label><input value={form.title} onChange={set('title')} required /></div>
-        <div className={styles.field}><label>Catégorie *</label>
-          <select value={form.category} onChange={set('category')}>
-            {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
-          </select>
-        </div>
-      </div>
-      <div className={styles.field}><label>Auteur</label><input value={form.author} onChange={set('author')} /></div>
-      <div className={styles.field}><label>Image URL</label><input value={form.imageUrl} onChange={set('imageUrl')} /></div>
-      <div className={styles.field}><label>Résumé</label><textarea rows={2} value={form.summary} onChange={set('summary')} /></div>
-      <div className={styles.field}><label>Contenu</label><textarea rows={8} value={form.content} onChange={set('content')} /></div>
-      <div style={{display:'flex',gap:8}}>
-        <button type="submit" className="btn btn-primary">{initial?.id ? 'Sauvegarder' : 'Créer l\'article'}</button>
-        <button type="button" className="btn btn-outline" onClick={onSaved}>Annuler</button>
-      </div>
-    </form>
-  );
-}
-
-// Formulaire de création d'un pronostic.
-function PronoForm({ onSaved }) {
-  const [form, setForm] = useState({ fixtureId: '', homeTeam: '', awayTeam: '', prediction: '', confidence: 65, league: 'Ligue 1', matchDate: '' });
-  const set = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }));
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      await api.post('/pronostics', form);
-      toast.success('Pronostic créé');
-      onSaved();
-    } catch { toast.error('Erreur'); }
-  };
-
-  return (
-    <form className={styles.form} onSubmit={handleSubmit}>
-      <div className={styles.formRow}>
-        <div className={styles.field}><label>Équipe domicile *</label><input value={form.homeTeam} onChange={set('homeTeam')} required /></div>
-        <div className={styles.field}><label>Équipe extérieur *</label><input value={form.awayTeam} onChange={set('awayTeam')} required /></div>
-      </div>
-      <div className={styles.formRow}>
-        <div className={styles.field}><label>Ligue</label><input value={form.league} onChange={set('league')} /></div>
-        <div className={styles.field}><label>Date du match *</label><input type="datetime-local" value={form.matchDate} onChange={set('matchDate')} required /></div>
-      </div>
-      <div className={styles.field}><label>Prédiction *</label><input value={form.prediction} onChange={set('prediction')} placeholder="Ex: Victoire PSG 2-1" required /></div>
-      <div className={styles.field}><label>Confiance : {form.confidence}%</label><input type="range" min={1} max={100} value={form.confidence} onChange={set('confidence')} /></div>
-      <div className={styles.field}><label>Fixture ID (API-Football)</label><input type="number" value={form.fixtureId} onChange={set('fixtureId')} /></div>
-      <button type="submit" className="btn btn-primary">Créer le pronostic</button>
-    </form>
-  );
-}
 
 export default function Admin() {
   const navigate = useNavigate();
@@ -163,7 +93,7 @@ export default function Admin() {
             </div>
             {showForm && (
               <div className={styles.formWrap}>
-                <PronoForm onSaved={() => { setShowForm(false); refetchPronos(); }} />
+                <AdminPronoForm onSaved={() => { setShowForm(false); refetchPronos(); }} />
               </div>
             )}
             <div className={styles.table}>
